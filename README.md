@@ -4,7 +4,7 @@
  * @Author: ThreeStones1029 2320218115@qq.com
  * @Date: 2024-03-31 04:04:02
  * @LastEditors: ShuaiLei
- * @LastEditTime: 2024-04-02 14:37:07
+ * @LastEditTime: 2024-04-02 14:40:23
 -->
 ## 代码使用简介
 
@@ -23,6 +23,6 @@
 12. 设置好权重路径`model_weight_path`和预测的图片路径`img_path`就能使用`predict.py`脚本进行预测了
 13. 如果要使用自己的数据集，请按照花分类数据集的文件结构进行摆放(即一个类别对应一个文件夹)，并且将训练以及预测脚本中的`num_classes`设置成你自己数据的类别数
 
-## [具体训练预测以及评估介绍](Spine_Fracture_detection_README.md)
+## [具体训练预测以及评估介绍(单击查看)](Spine_Fracture_detection_README.md)
 骨折预测\
 ![example](predict.png)
