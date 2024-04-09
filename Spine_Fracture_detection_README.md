@@ -1,10 +1,19 @@
+<!--
+ * @Description: 
+ * @version: 
+ * @Author: ThreeStones1029 2320218115@qq.com
+ * @Date: 2024-04-02 14:01:37
+ * @LastEditors: ShuaiLei
+ * @LastEditTime: 2024-04-09 09:08:08
+-->
 # 说明
 本文将用于记录骨折检测,总体流程将会是先检测,再对检测框里面的椎体进行二分类判断是否骨折
 
 # 数据集制作(代码在drr_utils仓库中)
 ## DRR数据集制作
 * 由于骨折不明显时,正位较难判别椎体是否骨折,所以目前只做侧位的骨折检测
-* 根据verse2019的骨折分级标注,选出在T9-L6存在三级骨折的CT33例
+* 根据verse2019的骨折分级标注,选出在T9-L6存在三级骨折的CT33例,然后手动挑选了17例较好的
+* 再加上本地数据集22例,总共39例数据生成DRR
 ~~~bash
 
 ~~~
@@ -28,32 +37,10 @@
 ~~~bash
 
 ~~~
-# 训练
-## DRR预训练
-~~~bash
+# DRR and Intraoperative X-ray spine fracture location and vertebrae detection.
 
-~~~
+## DRR
+DRR train predict eval and vis process can find details in [here](document/DRR.md)
 
-## 真实X线片预测训练
-~~~bash
-
-~~~
-
-# 预测
-~~~bash
-
-~~~
-
-# 评估
-~~~bash
-
-~~~
-# 检测后预测
-~~~bash
-
-~~~
-
-# 可视化
-~~~bash
-
-~~~
+## Intraoperative X-ray 
+Intraoperative X-ray train predict eval and vis process can find details in [here](document/Intraoperative_X-ray.md)
