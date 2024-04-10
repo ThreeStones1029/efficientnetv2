@@ -18,7 +18,7 @@ def main(args):
 
     print(args)
     print('Start Tensorboard with "tensorboard --logdir=runs", view at http://localhost:6006/')
-    tb_writer = SummaryWriter()
+    tb_writer = SummaryWriter(log_dir=args.log_dir)
     if os.path.exists(args.model_save_dir) is False:
         os.makedirs(args.model_save_dir)
 
@@ -146,12 +146,13 @@ if __name__ == '__main__':
     parser.add_argument('--only_save_best_model', type=bool, default=True)
     # 数据集所在根目录
     # https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz
-    parser.add_argument('--data-path', type=str, default="dataset/spine_fracture")
+    parser.add_argument('--data-path', type=str, default="dataset/spine_fracture/drr/AP")
     # download model weights
     # 链接: https://pan.baidu.com/s/1uZX36rvrfEss-JGj4yfzbQ  密码: 5gu1
-    parser.add_argument('--weights', type=str, default='pretrain_model_imagenet/pre_efficientnetv2-l.pth', help='initial weights path')
-    parser.add_argument("--weights_category", type=str, default="l", help="the pretrain weights category, only s or m or l")
-    parser.add_argument('--model_save_dir', type=str, default="weights/drr_pretrain/l", help="trained models save path")
+    parser.add_argument('--weights', type=str, default='pretrain_model_imagenet/pre_efficientnetv2-m.pth', help='initial weights path')
+    parser.add_argument("--weights_category", type=str, default="m", help="the pretrain weights category, only s or m or l")
+    parser.add_argument('--model_save_dir', type=str, default="weights/spine_fracture/drr/AP/m", help="trained models save path")
+    parser.add_argument('--log_dir', type=str, default="runs/spine_fracture/drr/AP/m", help="tensorboard logdir save path")
     parser.add_argument('--freeze-layers', type=bool, default=True)
     parser.add_argument('--device', default='cuda:1', help='device id (i.e. 0 or 0,1 or cpu)')
     opt = parser.parse_args()
