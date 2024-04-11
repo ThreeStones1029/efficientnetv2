@@ -67,7 +67,7 @@ def main(args):
                                              num_workers=nw,
                                              collate_fn=val_dataset.collate_fn)
 
-    # 如果存在预训练权重则载入,根据类型导入[s, m, l]
+    # 根据类型导入[s, m, l]初始化模型
     if args.weights_category == "s":
         model = efficientnetv2_s(num_classes=args.num_classes).to(device)
     if args.weights_category == "m":
@@ -75,14 +75,14 @@ def main(args):
     if args.weights_category == "l":
         model = efficientnetv2_l(num_classes=args.num_classes).to(device)
     
-    if args.weights != "":
-        if os.path.exists(args.weights):
-            weights_dict = torch.load(args.weights, map_location=device)
+    if args.pretrain_weights != "":
+        if os.path.exists(args.pretrain_weights):
+            weights_dict = torch.load(args.pretrain_weights, map_location=device)
             load_weights_dict = {k: v for k, v in weights_dict.items()
                                  if model.state_dict()[k].numel() == v.numel()}
             print(model.load_state_dict(load_weights_dict, strict=False))
         else:
-            raise FileNotFoundError("not found weights file: {}".format(args.weights))
+            raise FileNotFoundError("not found weights file: {}".format(args.pretrain_weights))
 
     # 是否冻结权重
     if args.freeze_layers:
@@ -147,9 +147,9 @@ if __name__ == '__main__':
     # 数据集所在根目录
     # https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz
     parser.add_argument('--data-path', type=str, default="dataset/spine_fracture/drr/all")
-    # download model weights
+    # download model pre_weights
     # 链接: https://pan.baidu.com/s/1uZX36rvrfEss-JGj4yfzbQ  密码: 5gu1
-    parser.add_argument('--weights', type=str, default='pretrain_model_imagenet/pre_efficientnetv2-m.pth', help='initial weights path')
+    parser.add_argument('--pretrain_weights', type=str, default='pretrain_model_imagenet/pre_efficientnetv2-m.pth', help='pretrain weights path')
     parser.add_argument("--weights_category", type=str, default="m", help="the pretrain weights category, only s or m or l")
     parser.add_argument('--model_save_dir', type=str, default="weights/spine_fracture/drr/all/m", help="trained models save path")
     parser.add_argument('--log_dir', type=str, default="runs/spine_fracture/drr/all/m", help="tensorboard logdir save path")

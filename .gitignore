@@ -2,3 +2,4 @@ dataset/
 pretrain_model_imagenet/
 runs/
 weights/
+infer_output/
