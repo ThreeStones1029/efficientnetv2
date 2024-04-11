@@ -1,13 +1,11 @@
 import os
 import math
 import argparse
-
 import torch
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 from torchvision import transforms
 import torch.optim.lr_scheduler as lr_scheduler
-
 from model import efficientnetv2_s, efficientnetv2_m, efficientnetv2_l
 from my_dataset import MyDataSet
 from utils import read_split_data, train_one_epoch, evaluate
@@ -151,8 +149,8 @@ if __name__ == '__main__':
     # 链接: https://pan.baidu.com/s/1uZX36rvrfEss-JGj4yfzbQ  密码: 5gu1
     parser.add_argument('--pretrain_weights', type=str, default='pretrain_model_imagenet/pre_efficientnetv2-m.pth', help='pretrain weights path')
     parser.add_argument("--weights_category", type=str, default="m", help="the pretrain weights category, only s or m or l")
-    parser.add_argument('--model_save_dir', type=str, default="weights/spine_fracture/drr/all/m", help="trained models save path")
-    parser.add_argument('--log_dir', type=str, default="runs/spine_fracture/drr/all/m", help="tensorboard logdir save path")
+    parser.add_argument('--model_save_dir', type=str, default="weights/spine_fracture/test", help="trained models save path")
+    parser.add_argument('--log_dir', type=str, default="runs/spine_fracture/test", help="tensorboard logdir save path")
     parser.add_argument('--freeze-layers', type=bool, default=True)
     parser.add_argument('--device', default='cuda:2', help='device id (i.e. 0 or 0,1 or cpu)')
     opt = parser.parse_args()

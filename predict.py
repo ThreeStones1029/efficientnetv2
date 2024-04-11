@@ -1,10 +1,10 @@
 '''
-Description: 
+Description: The file will be used to predict category of vertebrae.
 version: 
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-03-31 04:04:02
 LastEditors: ShuaiLei
-LastEditTime: 2024-04-11 07:05:52
+LastEditTime: 2024-04-11 12:42:14
 '''
 import os
 import json
@@ -18,6 +18,7 @@ from tqdm import tqdm
 import sys
 import glob
 from model import efficientnetv2_s, efficientnetv2_m, efficientnetv2_l
+from tools.io.common import load_json_file
 
 
 def get_test_images(infer_dir, infer_img):
@@ -31,7 +32,7 @@ def get_test_images(infer_dir, infer_img):
     images = set()
     infer_dir = os.path.abspath(infer_dir)
     assert os.path.isdir(infer_dir), "infer_dir {} is not a directory".format(infer_dir)
-    exts = ['jpg', 'jpeg', 'png', 'bmp']
+    exts = ["jpg", "png"]
     exts += [ext.upper() for ext in exts]
     for ext in exts:
         images.update(glob.glob('{}/*.{}'.format(infer_dir, ext)))
@@ -46,11 +47,10 @@ def main(args):
                 "m": [384, 480],
                 "l": [384, 480]}
     num_model = args.weights_category
-    data_transform = transforms.Compose(
-        [transforms.Resize(img_size[num_model][1]),
-         transforms.CenterCrop(img_size[num_model][1]),
-         transforms.ToTensor(),
-         transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])])
+    data_transform = transforms.Compose([transforms.Resize(img_size[num_model][1]),
+                                         transforms.CenterCrop(img_size[num_model][1]),
+                                         transforms.ToTensor(),
+                                         transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])])
 
     # 实例化验证数据集
     test_images_path = get_test_images(args.infer_dir, args.infer_image)
@@ -91,11 +91,7 @@ def main(args):
             all_pred_classes += pred_classes
             all_pred_scores += pred_scores
 
-    json_path = './class_indices.json'
-    assert os.path.exists(json_path), "file: '{}' dose not exist.".format(json_path)
-    with open(json_path, "r") as f:
-        class_indict = json.load(f)
-
+    class_indict = load_json_file('./class_indices.json')
     # load image
     for i, image_path in enumerate(test_images_path):
         image = Image.open(image_path)
@@ -110,7 +106,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--device', default='cuda:2', help='device id (i.e. 0 or 0,1 or cpu)')
+    parser.add_argument('--device', default='cpu', help='device id (i.e. 0 or 0,1 or cpu)')
     parser.add_argument('--num_classes', type=int, default=2)
     parser.add_argument('--batch-size', type=int, default=8)
     # 数据集所在根目录

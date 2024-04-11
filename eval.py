@@ -1,71 +1,69 @@
+'''
+Description: The function will be used eval classify result.
+version: 
+Author: ThreeStones1029 2320218115@qq.com
+Date: 2024-04-02 13:58:48
+LastEditors: ShuaiLei
+LastEditTime: 2024-04-11 13:17:34
+'''
 import os
-import math
+import sys
 import argparse
-
 import torch
-import torch.optim as optim
-from torch.utils.tensorboard import SummaryWriter
 from torchvision import transforms
-import torch.optim.lr_scheduler as lr_scheduler
-
 from model import efficientnetv2_s, efficientnetv2_m, efficientnetv2_l
 from my_dataset import MyDataSet
-from utils import read_split_data, train_one_epoch, evaluate
+from utils import evaluate
+from tools.io.common import load_json_file
+from tqdm import tqdm
+import random
+
+
+def get_eval_images_and_labels(data_root, json_file):
+    """
+    The function will be used to generate categories information and save it in txt file.
+    """
+    random.seed(0)
+    supported_exts = ["jpg", "JPG", "png", "PNG"]
+    images_folder_list = [os.path.join(data_root, cla) for cla in os.listdir(data_root) if os.path.isdir(os.path.join(data_root, cla))]
+    class_indict = load_json_file(json_file)
+    classname2id = {classname: classid for classid, classname in class_indict.items()}
+    eval_image_paths = []
+    eval_labels = []
+    for images_folder in images_folder_list:
+        for file_name in os.listdir(images_folder):
+            if file_name.split(".")[-1] in supported_exts:
+                classname = os.path.basename(images_folder)
+                eval_image_paths.append(os.path.join(images_folder, file_name))
+                eval_labels.append(int(classname2id[classname]))
+    return eval_image_paths, eval_labels
 
 
 def main(args):
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
-
     print(args)
-    tb_writer = SummaryWriter()
-    if os.path.exists(args.model_save_dir) is False:
-        os.makedirs(args.model_save_dir)
-
-    train_images_path, train_images_label, val_images_path, val_images_label = read_split_data(args.data_path)
-
+    eval_images_path, eval_images_label = get_eval_images_and_labels(args.eval_dir, args.class_indict_file)
     img_size = {"s": [300, 384],  # train_size, val_size
                 "m": [384, 480],
                 "l": [384, 480]}
-    
     num_model = args.weights_category
-
-    data_transform = {
-        "train": transforms.Compose([transforms.RandomResizedCrop(img_size[num_model][0]),
-                                     transforms.RandomHorizontalFlip(),
-                                     transforms.ToTensor(),
-                                     transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])]),
-        "val": transforms.Compose([transforms.Resize(img_size[num_model][1]),
-                                   transforms.CenterCrop(img_size[num_model][1]),
-                                   transforms.ToTensor(),
-                                   transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])])}
-
-    # 实例化训练数据集
-    train_dataset = MyDataSet(images_path=train_images_path,
-                              images_class=train_images_label,
-                              transform=data_transform["train"])
-
-    # 实例化验证数据集
-    val_dataset = MyDataSet(images_path=val_images_path,
-                            images_class=val_images_label,
-                            transform=data_transform["val"])
-
+    data_transform = transforms.Compose([transforms.Resize(img_size[num_model][1]),
+                     transforms.CenterCrop(img_size[num_model][1]),
+                     transforms.ToTensor(),
+                     transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])])
+    # 评估数据集
+    eval_dataset = MyDataSet(images_path=eval_images_path,
+                             images_class=eval_images_label,
+                             transform=data_transform)
     batch_size = args.batch_size
     nw = min([os.cpu_count(), batch_size if batch_size > 1 else 0, 8])  # number of workers
     print('Using {} dataloader workers every process'.format(nw))
-    train_loader = torch.utils.data.DataLoader(train_dataset,
-                                               batch_size=batch_size,
-                                               shuffle=True,
-                                               pin_memory=True,
-                                               num_workers=nw,
-                                               collate_fn=train_dataset.collate_fn)
-
-    val_loader = torch.utils.data.DataLoader(val_dataset,
-                                             batch_size=batch_size,
-                                             shuffle=False,
-                                             pin_memory=True,
-                                             num_workers=nw,
-                                             collate_fn=val_dataset.collate_fn)
-
+    eval_loader = torch.utils.data.DataLoader(eval_dataset,
+                                              batch_size=batch_size,
+                                              shuffle=False,
+                                              pin_memory=True,
+                                              num_workers=nw,
+                                              collate_fn=eval_dataset.collate_fn)
     # 如果存在预训练权重则载入,根据类型导入[s, m, l]
     if args.weights_category == "s":
         model = efficientnetv2_s(num_classes=args.num_classes).to(device)
@@ -73,85 +71,38 @@ def main(args):
         model = efficientnetv2_m(num_classes=args.num_classes).to(device)
     if args.weights_category == "l":
         model = efficientnetv2_l(num_classes=args.num_classes).to(device)
-    
-    if args.weights != "":
-        if os.path.exists(args.weights):
-            weights_dict = torch.load(args.weights, map_location=device)
-            load_weights_dict = {k: v for k, v in weights_dict.items()
-                                 if model.state_dict()[k].numel() == v.numel()}
-            print(model.load_state_dict(load_weights_dict, strict=False))
-        else:
-            raise FileNotFoundError("not found weights file: {}".format(args.weights))
-
-    # 是否冻结权重
-    if args.freeze_layers:
-        for name, para in model.named_parameters():
-            # 除head外，其他权重全部冻结
-            if "head" not in name:
-                para.requires_grad_(False)
-            else:
-                print("training {}".format(name))
-
-    pg = [p for p in model.parameters() if p.requires_grad]
-    optimizer = optim.SGD(pg, lr=args.lr, momentum=0.9, weight_decay=1E-4)
-    # Scheduler https://arxiv.org/pdf/1812.01187.pdf
-    lf = lambda x: ((1 + math.cos(x * math.pi / args.epochs)) / 2) * (1 - args.lrf) + args.lrf  # cosine
-    scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lf)
-    val_best_model_acc = 0
-    train_best_model_acc = 0
-
-    for epoch in range(args.epochs):
-        # train
-        train_loss, train_acc = train_one_epoch(model=model,
-                                                optimizer=optimizer,
-                                                data_loader=train_loader,
-                                                device=device,
-                                                epoch=epoch)
-        scheduler.step()
-        # validate
-        val_loss, val_acc = evaluate(model=model,
-                                     data_loader=val_loader,
-                                     device=device,
-                                     epoch=epoch)
-        tags = ["train_loss", "train_acc", "val_loss", "val_acc", "learning_rate"]
-        tb_writer.add_scalar(tags[0], train_loss, epoch)
-        tb_writer.add_scalar(tags[1], train_acc, epoch)
-        tb_writer.add_scalar(tags[2], val_loss, epoch)
-        tb_writer.add_scalar(tags[3], val_acc, epoch)
-        tb_writer.add_scalar(tags[4], optimizer.param_groups[0]["lr"], epoch)
-
-        if args.only_save_best_model:
-            if val_acc > val_best_model_acc:
-                torch.save(model.state_dict(), os.path.join(args.model_save_dir, "val_best_model.pth"))
-                val_best_model_acc = val_acc
-            if train_acc > train_best_model_acc:
-                torch.save(model.state_dict(), os.path.join(args.model_save_dir, "train_best_model.pth"))
-                train_best_model_acc = train_acc
-        else:
-            if epoch % args.snapshot_epoch == 0:
-                torch.save(model.state_dict(), os.path.join(args.model_save_dir, ".model-{}.pth".format(epoch)))
-    print("[*] The val best model acc is {}".format(val_best_model_acc))
-    print("[*] The train best model acc is {}".format(train_best_model_acc))
+    # load model weights
+    model.load_state_dict(torch.load(args.model_path, map_location=device))
+    # eval
+    loss_function = torch.nn.CrossEntropyLoss()
+    model.eval()
+    accu_num = torch.zeros(1).to(device)   # 累计预测正确的样本数
+    accu_loss = torch.zeros(1).to(device)  # 累计损失
+    sample_num = 0
+    data_loader = tqdm(eval_loader, file=sys.stdout)
+    with torch.no_grad():
+        for step, data in enumerate(data_loader):
+            images, labels = data
+            sample_num += images.shape[0]
+            pred = model(images.to(device))
+            pred_classes = torch.max(pred, dim=1)[1]
+            accu_num += torch.eq(pred_classes, labels.to(device)).sum()
+            loss = loss_function(pred, labels.to(device))
+            accu_loss += loss
+    eval_loss = accu_loss.item() / (step + 1)
+    eval_acc = accu_num.item() / sample_num
+    print("[*] The best model acc is {}".format(eval_acc))
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('--device', default='cuda:2', help='device id (i.e. 0 or 0,1 or cpu)')
     parser.add_argument('--num_classes', type=int, default=2)
-    parser.add_argument('--epochs', type=int, default=200)
-    parser.add_argument('--batch-size', type=int, default=8)
-    parser.add_argument('--lr', type=float, default=0.01)
-    parser.add_argument('--lrf', type=float, default=0.01)
-    parser.add_argument('--snapshot_epoch', type=int, default=5)
-    parser.add_argument('--only_save_best_model', type=bool, default=True)
+    parser.add_argument('--batch-size', type=int, default=1)
     # 数据集所在根目录
-    # https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz
-    parser.add_argument('--data-path', type=str, default="dataset/spine_fracture")
-    # download model weights
-    # 链接: https://pan.baidu.com/s/1uZX36rvrfEss-JGj4yfzbQ  密码: 5gu1
-    parser.add_argument('--weights', type=str, default='pretrain_model_imagenet/pre_efficientnetv2-l.pth', help='initial weights path')
+    parser.add_argument('--eval_dir', type=str, default="dataset/spine_fracture/drr/LA", help="eval images folder directory")
+    parser.add_argument('--class_indict_file', type=str, default="./class_indices.json", help="The class name and label id dict")
     parser.add_argument("--weights_category", type=str, default="l", help="the pretrain weights category, only s or m or l")
-    parser.add_argument('--model_save_dir', type=str, default="weights/drr_pretrain/l", help="trained models save path")
-    parser.add_argument('--freeze-layers', type=bool, default=True)
-    parser.add_argument('--device', default='cuda:1', help='device id (i.e. 0 or 0,1 or cpu)')
+    parser.add_argument('--model_path', type=str, default="weights/spine_fracture/drr/LA/l/val_best_model.pth", help="infer weight path")
     opt = parser.parse_args()
     main(opt)
