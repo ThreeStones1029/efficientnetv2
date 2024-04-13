@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-03-31 04:04:02
 LastEditors: ShuaiLei
-LastEditTime: 2024-04-11 12:42:14
+LastEditTime: 2024-04-13 07:25:24
 '''
 import os
 import json
@@ -114,6 +114,6 @@ if __name__ == '__main__':
     parser.add_argument('--infer_image', type=str, default="", help="single image infer")
     parser.add_argument("--weights_category", type=str, default="s", help="the pretrain weights category, only s or m or l")
     parser.add_argument('--model_path', type=str, default="weights/spine_fracture/drr/LA/s/val_best_model.pth", help="infer weight path")
-    parser.add_argument('--infer_output_dir', type=str, default="infer_output", help="infer weight path")
+    parser.add_argument('--infer_output_dir', type=str, default="infer_output", help="infer image save path")
     opt = parser.parse_args()
     main(opt)

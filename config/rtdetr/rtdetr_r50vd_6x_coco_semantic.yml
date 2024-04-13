@@ -1,0 +1,11 @@
+_BASE_: [
+  '../datasets/coco_detection_semantic.yml',
+  '../runtime.yml',
+  '_base_/optimizer_6x.yml',
+  '_base_/rtdetr_r50vd.yml',
+  '_base_/rtdetr_reader.yml',
+]
+
+weights: models/semantic/rtdetr_r50vd_6x_coco/best_model
+find_unused_parameters: True
+log_iter: 200

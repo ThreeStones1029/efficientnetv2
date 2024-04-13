@@ -4,20 +4,8 @@ version:
 Author: ThreeStones1029 221620010039@hhu.edu.cn
 Date: 2023-09-26 15:46:35
 LastEditors: ShuaiLei
-LastEditTime: 2024-04-12 09:01:45
+LastEditTime: 2024-04-13 07:17:05
 '''
-# The following API functions are defined:
-#  PreCOCO       - COCO api class that loads COCO annotation file and prepare data structures.
-#  getAnnIds  
-#  getCatIds  
-#  getImgIds  
-#  loadAnns   
-#  loadCats  
-#  loadImgs   
-#  showAnns   
-#  loadRes    
-#  download   
-# Throughout the API "ann"=annotation, "cat"=category, and "img"=image.
 import time
 from collections import defaultdict
 from io.common import load_json_file

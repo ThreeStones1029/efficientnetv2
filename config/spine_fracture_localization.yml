@@ -1,0 +1,10 @@
+# detection_parameter
+is_run_detection: False
+choosed_detection_model: yolov5
+infer_image: ""
+infer_dir: ""
+
+# yolov5 parameter
+
+# rtdetr parameter
+infer_output_folder: ""

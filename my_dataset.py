@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-03-31 04:04:02
 LastEditors: ShuaiLei
-LastEditTime: 2024-04-12 06:45:04
+LastEditTime: 2024-04-13 08:50:56
 '''
 from PIL import Image
 import torch
@@ -55,6 +55,28 @@ class ValDataSet(Dataset):
         # RGB为彩色图片，L为灰度图片
         if img.mode != 'RGB':
             raise ValueError("image: {} isn't RGB mode.".format(self.images_path[item]))
+        if self.transform is not None:
+            img = self.transform(img)
+        return img
+
+    @staticmethod
+    def collate_fn(batch):
+        images = batch
+        images = torch.stack(images, dim=0)
+        return images
+    
+
+class ValDataSetNoRead(Dataset):
+    """测试数据集 不读取"""
+    def __init__(self, images: list, transform=None):
+        self.images = images
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.images)
+
+    def __getitem__(self, item):
+        img = self.images[item]
         if self.transform is not None:
             img = self.transform(img)
         return img
