@@ -4,10 +4,17 @@
  * @Author: ThreeStones1029 2320218115@qq.com
  * @Date: 2024-04-02 14:01:37
  * @LastEditors: ShuaiLei
- * @LastEditTime: 2024-04-09 09:08:08
+ * @LastEditTime: 2024-04-11 13:34:22
 -->
 # 说明
 本文将用于记录骨折检测,总体流程将会是先检测,再对检测框里面的椎体进行二分类判断是否骨折
+原代码来源: https://github.com/WZMIAOMIAO/deep-learning-for-image-processing/tree/master/pytorch_classification/Test11_efficientnetV2
+改善后: https://github.com/ThreeStones1029/efficientnetv2
+
+# 代码改进点
+## 增加预测多张图片,可以批次预测
+
+## 增加批量评估文件eval.py
 
 # 数据集制作(代码在drr_utils仓库中)
 ## DRR数据集制作
@@ -44,3 +51,6 @@ DRR train predict eval and vis process can find details in [here](document/DRR.m
 
 ## Intraoperative X-ray 
 Intraoperative X-ray train predict eval and vis process can find details in [here](document/Intraoperative_X-ray.md)
+
+# 增加eval.py与predict.py,增加预测数据集加载类
+目前可以批次预测
