@@ -4,7 +4,7 @@
  * @Author: ThreeStones1029 2320218115@qq.com
  * @Date: 2024-04-09 09:02:50
  * @LastEditors: ShuaiLei
- * @LastEditTime: 2024-04-11 03:11:14
+ * @LastEditTime: 2024-04-14 08:35:07
 -->
 # Dataset
 There are three kinds of datasets which LA, AP, and all. 
@@ -26,7 +26,7 @@ The final AP and LA drr images number table as follow.
 
 # Results
 ## DRR
-| No | train | val | s(77.84MB) | m(203.15MB) | l(449.72MB) | 
+| No | train(number) | val(number) | s(77.84MB)accuracy | m(203.15MB)accuracy | l(449.72MB)accuracy | 
 |:---:|:---:|:---:|:---:|:---:|:---:|
 | AP | 696 | 172 | 91.279% | 91.86% | 93.6% |
 | LA | 640 | 160 |87.5% | 89.375% | 94.375% |
