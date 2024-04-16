@@ -8,3 +8,11 @@ infer_dir: ""
 
 # rtdetr parameter
 infer_output_folder: ""
+object_detection_parameter["envs_path"],
+object_detection_parameter["detection_script_path"],
+object_detection_parameter["config_path"],
+images_path,
+detection_result_save_path,
+0.6
+False
+True

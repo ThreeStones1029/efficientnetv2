@@ -152,6 +152,6 @@ if __name__ == '__main__':
     parser.add_argument('--model_save_dir', type=str, default="weights/spine_fracture/test", help="trained models save path")
     parser.add_argument('--log_dir', type=str, default="runs/spine_fracture/test", help="tensorboard logdir save path")
     parser.add_argument('--freeze-layers', type=bool, default=True)
-    parser.add_argument('--device', default='cuda:2', help='device id (i.e. 0 or 0,1 or cpu)')
+    parser.add_argument('--device', default='cuda:1', help='device id (i.e. 0 or 0,1 or cpu)')
     opt = parser.parse_args()
     main(opt)

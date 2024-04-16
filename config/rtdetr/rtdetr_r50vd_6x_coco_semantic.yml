@@ -6,6 +6,6 @@ _BASE_: [
   '_base_/rtdetr_reader.yml',
 ]
 
-weights: models/semantic/rtdetr_r50vd_6x_coco/best_model
+weights: /home/RT-DETR/rtdetr_paddle/output/fracture_dataset/semantic/rtdetr_r50vd_6x_coco/best_model
 find_unused_parameters: True
 log_iter: 200
