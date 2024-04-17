@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-12 08:28:55
 LastEditors: ShuaiLei
-LastEditTime: 2024-04-13 09:00:06
+LastEditTime: 2024-04-17 14:18:52
 '''
 import os
 import sys
@@ -17,12 +17,25 @@ from PIL import Image
 from model import efficientnetv2_s, efficientnetv2_m, efficientnetv2_l
 from tools.io.common import load_json_file
 from tools.coco.precoco import PreCOCO
-from detection.rtdetr_detection import rtdetr_infer
+from detection.rtdetr_detection import rtdetr_paddle_infer, rtdetr_pytorch_infer
 from detection.yolov5_detection import yolov5_infer
 from my_dataset import ValDataSetNoRead
 
 
-def get_detection_result(infer_dir, infer_image, is_run_detection, chooosed_detection_model, bbox_json_file):
+rtdetr_pytorch_infer_parameter = {"envs_path": "/root/anaconda3/bin/python",
+                                  "detection_script_path": "/home/RT-DETR/rtdetr_pytorch/tools/infer.py", 
+                                  "config_path": "/home/RT-DETR/rtdetr_pytorch/configs/rtdetr/rtdetr_r50vd_6x_coco.yml",
+                                  "model_path": "/home/RT-DETR/rtdetr_pytorch/output/fracture_dataset/semantic/rtdetr_r50vd_6x_coco/best_checkpoint.pth"}
+
+rtdetr_paddle_infer_parameter = {"envs_path": "",
+                                  "detection_script_path": "", 
+                                  "config_path": ""}
+
+yolov5_infer_parameter = {"envs_path": "",
+                          "detection_script_path": "", 
+                          "config_path": ""}
+
+def get_detection_result(infer_dir, is_run_detection, detection_model, infer_output_dir, bbox_json_file):
     """
     The function will used to get detection result.
     infer_dir: infer images save folder.
@@ -40,15 +53,18 @@ def get_detection_result(infer_dir, infer_image, is_run_detection, chooosed_dete
         for img_id, anns in imgToAnns.items():
             print(img_id, anns)
     else:
-        if chooosed_detection_model == "rtdetr":
-            imgToAnns = rtdetr_infer(infer_dir, infer_image)
-        if chooosed_detection_model == "yolov5":
-            imgToAnns = yolov5_infer(infer_dir, infer_image)
+        if detection_model == "rtdetr_paddle":
+            imgToAnns = rtdetr_paddle_infer(rtdetr_paddle_infer_parameter, infer_dir)
+        if detection_model == "rtdetr_pytorch":
+            imgToAnns = rtdetr_pytorch_infer(rtdetr_pytorch_infer_parameter, infer_dir, infer_output_dir)
+        if detection_model == "yolov5":
+            imgToAnns = yolov5_infer(yolov5_infer_parameter, infer_dir)
     return imgToAnns
     
 
-
 def main(args):
+    test_images = get_detection_result(args.infer_dir, args.is_run_detection, args.detection_model, args.infer_output_dir, args.bbox_json_file)
+
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
     img_size = {"s": [300, 384],  # train_size, val_size
                 "m": [384, 480],
@@ -60,7 +76,6 @@ def main(args):
                                          transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])])
 
     # 实例化验证数据集
-    test_images = get_detection_result(args.infer_dir, args.infer_image, args.is_run_detection, args.chooosed_detection_model, args.bbox_json_file)
     # test_dataset = ValDataSetNoRead(images=test_images,
     #                                 transform=data_transform)
 
@@ -114,19 +129,18 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     # 测试数据集所在根目录
-    parser.add_argument('--infer_dir', type=str, default="dataset/spine_fracture/drr/test", help="multi images infer")
-    parser.add_argument('--infer_image', type=str, default="", help="single image infer")
+    parser.add_argument('--infer_dir', type=str, default="dataset/spine_fracture/test_drr", help="images infer")
     # detection parameter
-    parser.add_argument('--is_run_detection', type=bool, default=False, help="if run detection or not")
-    parser.add_argument('--choosed_detection_model', type="yolov5", default=False, help="the detection model")
+    parser.add_argument('--is_run_detection', type=bool, default=True, help="if run detection or not")
+    parser.add_argument('--detection_model', type=str, default="rtdetr_pytorch", help="the detection model")
     parser.add_argument('--save_cut_images', type=bool, default=False, help="save or not save the detection bbox images")
-    parser.add_argument('--bbox_json_file', type=str, default="", help="if not run detection, load the detection bbox result json")
+    parser.add_argument('--bbox_json_file', type=str, default="infer_output/bbox.json", help="if not run detection, load the detection bbox result json")
     # Classification paramater
     parser.add_argument('--device', default='cuda:3', help='device id (i.e. 0 or 0,1 or cpu)')
     parser.add_argument('--num_classes', type=int, default=2)
     parser.add_argument('--batch-size', type=int, default=8)
-    parser.add_argument("--weights_category", type=str, default="s", help="the pretrain weights category, only s or m or l")
-    parser.add_argument('--model_path', type=str, default="weights/spine_fracture/drr/LA/s/val_best_model.pth", help="infer weight path")
+    parser.add_argument("--weights_category", type=str, default="l", help="the pretrain weights category, only s or m or l")
+    parser.add_argument('--model_path', type=str, default="weights/spine_fracture/drr/all/l/val_best_model.pth", help="infer weight path")
     parser.add_argument('--infer_output_dir', type=str, default="infer_output", help="infer image save path")
     opt = parser.parse_args()
     main(opt)

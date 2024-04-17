@@ -4,11 +4,11 @@ version:
 Author: ThreeStones1029 221620010039@hhu.edu.cn
 Date: 2023-09-26 15:46:35
 LastEditors: ShuaiLei
-LastEditTime: 2024-04-13 07:17:05
+LastEditTime: 2024-04-17 14:10:54
 '''
 import time
 from collections import defaultdict
-from io.common import load_json_file
+from tools.io.common import load_json_file
 
 
 class PreCOCO:

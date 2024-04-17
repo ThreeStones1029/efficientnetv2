@@ -1,21 +1,35 @@
 '''
-Description: The function is rtdetr detection
+Description: this file will be used to detect vertebrae in xray.we can use yolov5 or rtdetr_paddle or rtdetr_pytorch
 version: 
 Author: ThreeStones1029 2320218115@qq.com
-Date: 2024-04-09 09:19:26
+Date: 2024-04-17 12:41:00
 LastEditors: ShuaiLei
-LastEditTime: 2024-04-16 02:10:56
+LastEditTime: 2024-04-17 14:14:53
 '''
-def rtdetr_infer():
-    """
-    """
-    script_parameter = [object_detection_parameter["envs_path"],
-                        object_detection_parameter["detection_script_path"],
-                        "-c", object_detection_parameter["config_path"],
-                        "--infer_dir", images_path,
-                        "--output_dir", detection_result_save_path,
+import subprocess
+
+
+def rtdetr_paddle_infer(detection_parameter, infer_dir, infer_output_dir):
+    script_parameter = [detection_parameter["envs_path"],
+                        detection_parameter["detection_script_path"],
+                        "-c", detection_parameter["config_path"],
+                        "--infer_dir", infer_dir,
+                        "--infer_output_dir",infer_output_dir,
                         "--draw_threshold", "0.6",
-                        "--use_vdl", "False",
-                        "--save_results", "True"]
+                        "--save_vis_results", "True"]
+    detection_command = " ".join(script_parameter)
+    subprocess.run(detection_command, shell=True)
+
+
+def rtdetr_pytorch_infer(detection_parameter, infer_dir, infer_output_dir):
+    script_parameter = [detection_parameter["envs_path"],
+                        detection_parameter["detection_script_path"],
+                        "-c", detection_parameter["config_path"],
+                        "--resume", detection_parameter["model_path"],
+                        "--infer_dir", infer_dir,
+                        "--infer_output_dir",infer_output_dir,
+                        "--draw_threshold", "0.6",
+                        "--save_vis_results", "True",
+                        ]
     detection_command = " ".join(script_parameter)
     subprocess.run(detection_command, shell=True)
