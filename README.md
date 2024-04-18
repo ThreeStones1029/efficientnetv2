@@ -4,7 +4,7 @@
  * @Author: ThreeStones1029 2320218115@qq.com
  * @Date: 2024-03-31 04:04:02
  * @LastEditors: ShuaiLei
- * @LastEditTime: 2024-04-11 07:09:37
+ * @LastEditTime: 2024-04-18 14:16:27
 -->
 ## 代码使用简介
 1. 下载好数据集，代码中默认使用的是花分类数据集，下载地址: [https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz](https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz),
@@ -23,5 +23,9 @@
 13. 如果要使用自己的数据集，请按照花分类数据集的文件结构进行摆放(即一个类别对应一个文件夹)，并且将训练以及预测脚本中的`num_classes`设置成你自己数据的类别数
 
 ## [具体训练预测以及评估介绍(单击查看)](Spine_Fracture_detection_README.md)
-骨折预测\
-![example](predict.png)
+骨折预测
+<div style="display: flex;">
+    <img src="document/AP_example.png" alt="Image 1" width="400"; padding: 5px;">
+    <img src="document/LA_example.png" alt="Image 2" width="400"; padding: 5px;">
+</div>
+</details>
