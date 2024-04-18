@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 221620010039@hhu.edu.cn
 Date: 2023-09-26 15:46:35
 LastEditors: ShuaiLei
-LastEditTime: 2024-04-17 14:10:54
+LastEditTime: 2024-04-18 13:14:20
 '''
 import time
 from collections import defaultdict
@@ -21,7 +21,7 @@ class PreCOCO:
         """
         # load dataset
         self.dataset,self.anns,self.cats,self.imgs = dict(),dict(),dict(),dict()
-        self.imgToAnns, self.catToImgs = defaultdict(list), defaultdict(list)
+        self.imgToAnns, self.catToImgs, self.ann_idToann = defaultdict(list), defaultdict(list), dict()
         self.cat_id2cat_name = dict()
         print('loading annotations into memory...')
         tic = time.time()
@@ -42,16 +42,18 @@ class PreCOCO:
     def createIndex(self):
         # create index
         print('creating index...')
-        anns, cats, imgs, img_idToFilename = {}, {}, {}, {}
+        anns, cats, imgs, img_idToFilename , ann_id2ann= {}, {}, {}, {}, {}
         imgToAnns,catToImgs = defaultdict(list),defaultdict(list)
         if 'annotations' in self.dataset:
             for ann in self.dataset['annotations']:
                 imgToAnns[ann['image_id']].append(ann)
                 img_idToFilename[ann['image_id']] = ann["file_name"]
+                ann_id2ann[ann["id"]] = ann
         print('index created!')
         # create class members
         self.anns = anns
         self.imgToAnns = imgToAnns
+        self.ann_idToann = ann_id2ann
         self.catToImgs = catToImgs
         self.imgs = imgs
         self.img_idToFilename = img_idToFilename

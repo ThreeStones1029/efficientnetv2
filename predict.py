@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-03-31 04:04:02
 LastEditors: ShuaiLei
-LastEditTime: 2024-04-17 14:06:37
+LastEditTime: 2024-04-18 12:13:18
 '''
 import os
 import json
@@ -13,7 +13,7 @@ import torch
 from PIL import Image
 from torchvision import transforms
 import matplotlib.pyplot as plt
-from my_dataset import ValDataSet
+from my_dataset import TestDataSet
 from tqdm import tqdm
 import sys
 import glob
@@ -54,8 +54,8 @@ def main(args):
 
     # 实例化验证数据集
     test_images_path = get_test_images(args.infer_dir, args.infer_image)
-    test_dataset = ValDataSet(images_path=test_images_path,
-                              transform=data_transform)
+    test_dataset = TestDataSet(images_path=test_images_path,
+                               transform=data_transform)
 
     batch_size = args.batch_size
     nw = min([os.cpu_count(), batch_size if batch_size > 1 else 0, 8])  # number of workers
