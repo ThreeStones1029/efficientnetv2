@@ -8,7 +8,8 @@ from torchvision import transforms
 import torch.optim.lr_scheduler as lr_scheduler
 from model import efficientnetv2_s, efficientnetv2_m, efficientnetv2_l
 from my_dataset import MyDataSet
-from utils import read_split_data, train_one_epoch, evaluate
+from utils import train_one_epoch, evaluate
+from tools.data.dataset_process import read_split_dataset
 
 
 def main(args):
@@ -20,7 +21,7 @@ def main(args):
     if os.path.exists(args.model_save_dir) is False:
         os.makedirs(args.model_save_dir)
 
-    train_images_path, train_images_label, val_images_path, val_images_label = read_split_data(args.data_path)
+    train_images_path, train_images_label, val_images_path, val_images_label = read_split_dataset(args.data_path, split_ratio={"train": 0.6, "val": 0.2, "test": 0.2}, save_txt=True)
 
     img_size = {"s": [300, 384],  # train_size, val_size
                 "m": [384, 480],
@@ -142,11 +143,9 @@ if __name__ == '__main__':
     parser.add_argument('--lrf', type=float, default=0.01)
     parser.add_argument('--snapshot_epoch', type=int, default=5)
     parser.add_argument('--only_save_best_model', type=bool, default=True)
-    # 数据集所在根目录
-    # https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz
-    parser.add_argument('--data-path', type=str, default="dataset/spine_fracture/drr/all")
+    # dataset path
+    parser.add_argument('--data-path', type=str, default="dataset/spine_fracture/cut_drr/all")
     # download model pre_weights
-    # 链接: https://pan.baidu.com/s/1uZX36rvrfEss-JGj4yfzbQ  密码: 5gu1
     parser.add_argument('--pretrain_weights', type=str, default='pretrain_model_imagenet/pre_efficientnetv2-m.pth', help='pretrain weights path')
     parser.add_argument("--weights_category", type=str, default="m", help="the pretrain weights category, only s or m or l")
     parser.add_argument('--model_save_dir', type=str, default="weights/spine_fracture/test", help="trained models save path")

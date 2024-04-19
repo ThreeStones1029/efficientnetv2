@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-11 08:09:16
 LastEditors: ShuaiLei
-LastEditTime: 2024-04-11 08:13:17
+LastEditTime: 2024-04-19 08:25:53
 '''
 import os
 import json
@@ -23,4 +23,4 @@ def save_json_file(data, json_path):
         os.makedirs(dirname)
     with open(json_path, 'w') as f:
         json.dump(data, f)
-    print(json_path, "save successfully")
+    print(json_path, "save successfully")   

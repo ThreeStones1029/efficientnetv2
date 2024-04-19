@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-02 13:58:48
 LastEditors: ShuaiLei
-LastEditTime: 2024-04-11 13:17:34
+LastEditTime: 2024-04-19 08:49:54
 '''
 import os
 import sys
@@ -15,6 +15,7 @@ from model import efficientnetv2_s, efficientnetv2_m, efficientnetv2_l
 from my_dataset import MyDataSet
 from utils import evaluate
 from tools.io.common import load_json_file
+from tools.data.dataset_process import read_images_and_labels_from_txt
 from tqdm import tqdm
 import random
 
@@ -42,7 +43,11 @@ def get_eval_images_and_labels(data_root, json_file):
 def main(args):
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
     print(args)
-    eval_images_path, eval_images_label = get_eval_images_and_labels(args.eval_dir, args.class_indict_file)
+    assert args.eval_dir != None or args.eval_txt != None, "eval dir and eval txt can not both none."
+    if args.eval_dir:
+        eval_images_path, eval_images_label = get_eval_images_and_labels(args.eval_dir, args.class_indict_file)
+    if args.eval_txt:
+        eval_images_path, eval_images_label = read_images_and_labels_from_txt(args.eval_txt)
     img_size = {"s": [300, 384],  # train_size, val_size
                 "m": [384, 480],
                 "l": [384, 480]}
@@ -100,9 +105,10 @@ if __name__ == '__main__':
     parser.add_argument('--num_classes', type=int, default=2)
     parser.add_argument('--batch-size', type=int, default=1)
     # 数据集所在根目录
-    parser.add_argument('--eval_dir', type=str, default="dataset/spine_fracture/drr/LA", help="eval images folder directory")
+    parser.add_argument('--eval_dir', type=str, default=None, help="eval images folder directory")
+    parser.add_argument('--eval_txt', type=str, default="dataset/spine_fracture/cut_drr/all/test.txt", help="eval images and labels txt file")
     parser.add_argument('--class_indict_file', type=str, default="./class_indices.json", help="The class name and label id dict")
     parser.add_argument("--weights_category", type=str, default="l", help="the pretrain weights category, only s or m or l")
-    parser.add_argument('--model_path', type=str, default="weights/spine_fracture/drr/LA/l/val_best_model.pth", help="infer weight path")
+    parser.add_argument('--model_path', type=str, default="weights/spine_fracture/drr/all/l/val_best_model.pth", help="infer weight path")
     opt = parser.parse_args()
     main(opt)
