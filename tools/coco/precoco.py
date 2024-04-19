@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 221620010039@hhu.edu.cn
 Date: 2023-09-26 15:46:35
 LastEditors: ShuaiLei
-LastEditTime: 2024-04-18 13:14:20
+LastEditTime: 2024-04-19 11:18:11
 '''
 import time
 from collections import defaultdict
@@ -47,8 +47,10 @@ class PreCOCO:
         if 'annotations' in self.dataset:
             for ann in self.dataset['annotations']:
                 imgToAnns[ann['image_id']].append(ann)
-                img_idToFilename[ann['image_id']] = ann["file_name"]
-                ann_id2ann[ann["id"]] = ann
+                if "file_name" in ann.keys():
+                    img_idToFilename[ann['image_id']] = ann["file_name"]
+                if "id" in ann.keys():
+                    ann_id2ann[ann["id"]] = ann
         print('index created!')
         # create class members
         self.anns = anns
