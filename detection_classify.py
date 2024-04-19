@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-12 08:28:55
 LastEditors: ShuaiLei
-LastEditTime: 2024-04-18 14:00:05
+LastEditTime: 2024-04-19 01:43:36
 '''
 import os
 import sys
@@ -142,7 +142,7 @@ def main(args):
         predict_class = all_pred_classes[i].numpy()
         score = all_pred_scores[i].numpy()
         ann = ann_idToann[i]
-        ann["status"] = class_indict[str(predict_class)]
+        ann["status"] = class_indict[str(predict_class)].split("_")[0]
         ann["fracture_prob"] = float(score)
         bboxes_fracture_info.append(ann)
         print("file_name: {}, ann_id: {}, category_name: {}, status: {} fracture_prob: {:.3}".format(ann["file_name"], ann["id"], ann["category_name"], class_indict[str(predict_class)], score))

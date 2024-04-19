@@ -4,12 +4,10 @@
  * @Author: ThreeStones1029 2320218115@qq.com
  * @Date: 2024-04-02 14:01:37
  * @LastEditors: ShuaiLei
- * @LastEditTime: 2024-04-11 13:34:22
+ * @LastEditTime: 2024-04-19 01:38:25
 -->
 # 说明
-本文将用于记录骨折检测,总体流程将会是先检测,再对检测框里面的椎体进行二分类判断是否骨折
-原代码来源: https://github.com/WZMIAOMIAO/deep-learning-for-image-processing/tree/master/pytorch_classification/Test11_efficientnetV2
-改善后: https://github.com/ThreeStones1029/efficientnetv2
+
 
 # 代码改进点
 ## 增加预测多张图片,可以批次预测
