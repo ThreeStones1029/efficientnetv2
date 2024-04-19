@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-12 08:28:55
 LastEditors: ShuaiLei
-LastEditTime: 2024-04-19 01:43:36
+LastEditTime: 2024-04-19 04:42:34
 '''
 import os
 import sys
@@ -20,7 +20,7 @@ from tools.coco.precoco import PreCOCO
 from detection.rtdetr_detection import rtdetr_paddle_infer, rtdetr_pytorch_infer
 from detection.yolov5_detection import yolov5_infer
 from my_dataset import TestDataSet
-from tools.bbox.bbox_process import get_cut_bbox
+from tools.bbox.bbox_process import get_cut_bbox, filter_low_score_bboxes
 from tools.vis.bbox_visualize import draw_bbox
 
 
@@ -39,7 +39,7 @@ yolov5_infer_parameter = {"envs_path": "",
                           "config_path": ""}
 
 
-def get_detection_result(infer_dir, is_run_detection, detection_model, output_dir, bbox_json_file):
+def get_detection_result(infer_dir, is_run_detection, detection_model, output_dir, bbox_json_file, threshold):
     """
     The function will used to get detection result.
     infer_dir: infer images save folder.
@@ -56,7 +56,7 @@ def get_detection_result(infer_dir, is_run_detection, detection_model, output_di
             rtdetr_pytorch_infer(rtdetr_pytorch_infer_parameter, infer_dir, output_dir)
         if detection_model == "yolov5":
             yolov5_infer(yolov5_infer_parameter, infer_dir, output_dir)
-        
+    filter_low_score_bboxes(bbox_json_file, threshold) 
     cut_images, bbox_id_list = get_cut_images_from_bboxes(infer_dir, bbox_json_file)
     return cut_images, bbox_id_list
 
@@ -83,7 +83,7 @@ def get_cut_images_from_bboxes(infer_dir, bbox_json_file):
     
 
 def main(args):
-    test_cut_images, bbox_id_list = get_detection_result(args.infer_dir, args.is_run_detection, args.detection_model, args.output_dir, args.bbox_json_file)
+    test_cut_images, bbox_id_list = get_detection_result(args.infer_dir, args.is_run_detection, args.detection_model, args.output_dir, args.bbox_json_file, args.draw_threshold)
 
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
     img_size = {"s": [300, 384],  # train_size, val_size
