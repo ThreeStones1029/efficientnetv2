@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-03-31 04:04:02
 LastEditors: ShuaiLei
-LastEditTime: 2024-04-18 12:30:42
+LastEditTime: 2024-04-24 12:23:57
 '''
 from PIL import Image
 import torch
@@ -53,6 +53,8 @@ class TestDataSet(Dataset):
 
     def __getitem__(self, item):
         img = Image.open(self.images_path[item]) if self.images_path else self.images[item]
+        if img.mode != 'RGB':
+            img = img.convert('RGB')
         # RGB为彩色图片，L为灰度图片
         if img.mode != 'RGB':
             raise ValueError("exist image isn't RGB mode, please check and ensure image mode is RGB.")
