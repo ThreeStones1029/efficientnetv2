@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-11 08:09:16
 LastEditors: ShuaiLei
-LastEditTime: 2024-04-19 08:25:53
+LastEditTime: 2024-04-29 08:10:48
 '''
 import os
 import json
@@ -23,4 +23,16 @@ def save_json_file(data, json_path):
         os.makedirs(dirname)
     with open(json_path, 'w') as f:
         json.dump(data, f)
-    print(json_path, "save successfully")   
+    print(json_path, "save successfully")  
+
+
+def get_sub_folder_paths(root_folder):
+    """
+    this function will be used to get sub_folder_path.
+    """
+    sub_folder_paths = []
+    sub_folder_names = os.listdir(root_folder)
+    for sub_folder_name in sub_folder_names:
+        if os.path.isdir(os.path.join(root_folder, sub_folder_name)):
+            sub_folder_paths.append(os.path.join(root_folder, sub_folder_name))
+    return sub_folder_paths 
