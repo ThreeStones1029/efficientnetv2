@@ -4,14 +4,14 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-05-04 13:21:53
 LastEditors: ShuaiLei
-LastEditTime: 2024-05-04 13:23:57
+LastEditTime: 2024-05-04 13:46:45
 '''
 import os
 import numpy as np
 import shutil
 from tools.io.common import load_json_file, save_json_file
     
-    
+
 def random_split_coco_dataset(images_folder_path, annotation_file, output_folder_path, split_info_dict):
     """
     随机划分json文件,并划分好相应的数据集
@@ -26,8 +26,11 @@ def random_split_coco_dataset(images_folder_path, annotation_file, output_folder
     end_index = 0
     def filter_annotations(annotations, image_ids):
         return [ann for ann in annotations if ann["image_id"] in image_ids]
-    for split_part_name, ratio in split_info_dict.items():
-        end_index += int(ratio * len(dataset["images"]))
+    for i, (split_part_name, ratio) in enumerate(split_info_dict.items()):
+        if i == len(split_info_dict.keys()) - 1:
+            end_index = len(dataset["images"])
+        else:
+            end_index += int(ratio * len(dataset["images"]))
         split_part_images = dataset["images"][start_index:end_index]
         start_index += int(ratio * len(dataset["images"]))
         split_part_folder = os.path.join(output_folder_path, split_part_name)

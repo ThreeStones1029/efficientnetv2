@@ -146,7 +146,7 @@ if __name__ == '__main__':
     parser.add_argument('--snapshot_epoch', type=int, default=5)
     parser.add_argument('--only_save_best_model', type=bool, default=True)
     # dataset path
-    parser.add_argument('--data-path', type=str, default="dataset/spine_fracture/cut_xray")
+    parser.add_argument('--data-path', type=str, default="dataset/spine_fracture/cut_xray/train_val")
     # download model pre_weights
     parser.add_argument('--pretrain_weights', type=str, default='pretrain_model_imagenet/pre_efficientnetv2-l.pth', help='pretrain weights path')
     parser.add_argument("--weights_category", type=str, default="l", help="the pretrain weights category, only s or m or l")
