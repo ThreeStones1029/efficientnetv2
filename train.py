@@ -21,7 +21,7 @@ def main(args):
     if os.path.exists(args.model_save_dir) is False:
         os.makedirs(args.model_save_dir)
 
-    train_images_path, train_images_label, val_images_path, val_images_label = read_split_dataset(args.data_path, split_ratio={"train": 0.6, "val": 0.2, "test": 0.2}, save_txt=True)
+    train_images_path, train_images_label, val_images_path, val_images_label = read_split_dataset(args.data_path, split_ratio={"train": 0.8, "val": 0.2}, save_txt=True)
 
     img_size = {"s": [300, 384],  # train_size, val_size
                 "m": [384, 480],
