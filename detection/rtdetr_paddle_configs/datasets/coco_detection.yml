@@ -1,0 +1,47 @@
+# xray
+metric: COCO
+num_classes: 4
+
+TrainDataset:
+  name: COCODataSet
+  image_dir: images/train_semantic
+  anno_path: annotations/train_semantic.json
+  dataset_dir: /home/RT-DETR/rtdetr_paddle/datasets/miccai/xray
+  data_fields: ['image', 'gt_bbox', 'gt_class', 'is_crowd']
+
+EvalDataset:
+  name: COCODataSet
+  image_dir: images/val_semantic
+  anno_path: annotations/val_semantic.json
+  dataset_dir: /home/RT-DETR/rtdetr_paddle/datasets/miccai/xray
+  allow_empty: true
+
+TestDataset:
+  name: ImageFolder
+  anno_path: annotations/val_semantic.json # also support txt (like VOC's label_list.txt)
+  dataset_dir: /home/RT-DETR/rtdetr_paddle/datasets/miccai/xray # if set, anno_path will be 'dataset_dir/anno_path'
+
+
+# drr
+# metric: COCO
+# num_classes: 1
+
+# TrainDataset:
+#   name: COCODataSet
+#   image_dir: train
+#   anno_path: annotations/semantic_bbox_train.json
+#   dataset_dir: /home/RT-DETR/rtdetr_paddle/datasets/fracture_dataset
+#   data_fields: ['image', 'gt_bbox', 'gt_class', 'is_crowd']
+
+# EvalDataset:
+#   name: COCODataSet
+#   image_dir: test
+#   anno_path: annotations/semantic_bbox_test.json
+#   dataset_dir: /home/RT-DETR/rtdetr_paddle/datasets/fracture_dataset
+#   allow_empty: true
+
+# TestDataset:
+#   name: ImageFolder
+#   anno_path: annotations/semantic_bbox_test.json # also support txt (like VOC's label_list.txt)
+#   dataset_dir: /home/RT-DETR/rtdetr_paddle/datasets/fracture_dataset # if set, anno_path will be 'dataset_dir/anno_path'
+

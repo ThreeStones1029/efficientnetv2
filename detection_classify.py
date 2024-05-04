@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-12 08:28:55
 LastEditors: ShuaiLei
-LastEditTime: 2024-05-04 11:52:15
+LastEditTime: 2024-05-04 14:47:28
 '''
 import os
 import sys
@@ -21,9 +21,20 @@ from detection.rtdetr_detection import rtdetr_paddle_infer, rtdetr_pytorch_infer
 from detection.yolov5_detection import yolov5_infer
 from my_dataset import TestDataSet
 from tools.bbox.bbox_process import get_cut_bbox, filter_low_score_bboxes
-from efficientnetV2.tools.vis.bbox_pre_visualize import draw_bbox
+from tools.vis.bbox_pre_visualize import draw_bbox
 
+# drr
+# rtdetr_pytorch_infer_parameter = {"envs_path": "/root/anaconda3/bin/python",
+#                                   "detection_script_path": "/home/RT-DETR/rtdetr_pytorch/tools/infer.py", 
+#                                   "config_path": "/home/RT-DETR/rtdetr_pytorch/configs/rtdetr/rtdetr_r50vd_6x_coco.yml",
+#                                   "model_path": "/home/RT-DETR/rtdetr_pytorch/output/fracture_dataset/semantic/rtdetr_r50vd_6x_coco/best_checkpoint.pth"}
 
+# rtdetr_paddle_infer_parameter = {"envs_path": "/root/anaconda3/envs/rtdetr/bin/python",
+#                                   "detection_script_path": "/home/RT-DETR/rtdetr_paddle/tools/infer.py", 
+#                                   "config_path": "/home/RT-DETR/rtdetr_paddle/configs/rtdetr/rtdetr_r50vd_6x_coco.yml",
+#                                   "model_path": "/home/RT-DETR/rtdetr_paddle/output/fracture_dataset/semantic/rtdetr_r50vd_6x_coco/best_model.pdparams"}
+
+# xray
 rtdetr_pytorch_infer_parameter = {"envs_path": "/root/anaconda3/bin/python",
                                   "detection_script_path": "/home/RT-DETR/rtdetr_pytorch/tools/infer.py", 
                                   "config_path": "/home/RT-DETR/rtdetr_pytorch/configs/rtdetr/rtdetr_r50vd_6x_coco.yml",
@@ -31,8 +42,8 @@ rtdetr_pytorch_infer_parameter = {"envs_path": "/root/anaconda3/bin/python",
 
 rtdetr_paddle_infer_parameter = {"envs_path": "/root/anaconda3/envs/rtdetr/bin/python",
                                   "detection_script_path": "/home/RT-DETR/rtdetr_paddle/tools/infer.py", 
-                                  "config_path": "/home/RT-DETR/rtdetr_paddle/configs/rtdetr/rtdetr_r50vd_6x_coco.yml",
-                                  "model_path": "/home/RT-DETR/rtdetr_paddle/output/fracture_dataset/semantic/rtdetr_r50vd_6x_coco/best_model.pdparams"}
+                                  "config_path": "detection/rtdetr_paddle_configs/rtdetr/rtdetr_r50vd_6x_coco.yml",
+                                  "model_path": "/home/RT-DETR/rtdetr_paddle/output/xray20240119/semantic/rtdetr_r50vd_6x_coco/best_model.pdparams"}
 
 yolov5_infer_parameter = {"envs_path": "",
                           "detection_script_path": "", 
@@ -75,10 +86,12 @@ def get_cut_images_from_pre_bboxes(infer_dir, bbox_json_file):
         image = Image.open(os.path.join(infer_dir, anns[0]["file_name"])).convert('RGB')
         width, height = image.size
         for ann in anns:
-            cut_bbox = get_cut_bbox(ann["bbox"], width, height, expand_coefficient=1.1)
-            cut_image = image.crop((cut_bbox[0], cut_bbox[1], cut_bbox[2], cut_bbox[3]))
-            bbox_id_list.append(ann["id"])
-            cut_images.append(cut_image)
+            if ann["category_name"] == "vertebrae":
+                print(ann["category_name"])
+                cut_bbox = get_cut_bbox(ann["bbox"], width, height, expand_coefficient=1.5)
+                cut_image = image.crop((cut_bbox[0], cut_bbox[1], cut_bbox[2], cut_bbox[3]))
+                bbox_id_list.append(ann["id"])
+                cut_images.append(cut_image)
     return cut_images, bbox_id_list
     
 
@@ -164,10 +177,10 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     # 测试数据集所在根目录
-    parser.add_argument('--infer_dir', type=str, default="dataset/spine_fracture/test_drr", help="images infer")
+    parser.add_argument('--infer_dir', type=str, default="dataset/spine_fracture/xray/test", help="images infer")
     # detection parameter
     parser.add_argument('--is_run_detection', type=bool, default=True, help="if run detection or not")
-    parser.add_argument('--detection_model', type=str, default="rtdetr_pytorch", help="the detection model")
+    parser.add_argument('--detection_model', type=str, default="rtdetr_paddle", help="the detection model")
     parser.add_argument('--save_cut_images', type=bool, default=False, help="save or not save the detection bbox images")
     parser.add_argument('--bbox_json_file', type=str, default="infer_output/bbox.json", help="if not run detection, load the detection bbox result json")
     parser.add_argument('--draw_threshold', type=str, default=0.6, help="the threshold used to filter bbox and visualize")
@@ -176,7 +189,7 @@ if __name__ == "__main__":
     parser.add_argument('--num_classes', type=int, default=2)
     parser.add_argument('--batch-size', type=int, default=8)
     parser.add_argument("--weights_category", type=str, default="l", help="the pretrain weights category, only s or m or l")
-    parser.add_argument('--model_path', type=str, default="weights/spine_fracture/drr/all/l/val_best_model.pth", help="infer weight path")
+    parser.add_argument('--model_path', type=str, default="weights/spine_fracture/xray/l/val_best_model.pth", help="infer weight path")
     parser.add_argument('--output_dir', type=str, default="infer_output", help="infer image save path")
     parser.add_argument('--visualize', type=bool, default=True, help="whether visualize result")
     parser.add_argument('--save_results', type=bool, default=True, help="whether save detection and fracture result")
