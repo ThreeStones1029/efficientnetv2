@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-12 08:28:55
 LastEditors: ShuaiLei
-LastEditTime: 2024-04-19 04:42:34
+LastEditTime: 2024-05-04 11:52:15
 '''
 import os
 import sys
@@ -21,7 +21,7 @@ from detection.rtdetr_detection import rtdetr_paddle_infer, rtdetr_pytorch_infer
 from detection.yolov5_detection import yolov5_infer
 from my_dataset import TestDataSet
 from tools.bbox.bbox_process import get_cut_bbox, filter_low_score_bboxes
-from tools.vis.bbox_visualize import draw_bbox
+from efficientnetV2.tools.vis.bbox_pre_visualize import draw_bbox
 
 
 rtdetr_pytorch_infer_parameter = {"envs_path": "/root/anaconda3/bin/python",
@@ -57,11 +57,11 @@ def get_detection_result(infer_dir, is_run_detection, detection_model, output_di
         if detection_model == "yolov5":
             yolov5_infer(yolov5_infer_parameter, infer_dir, output_dir)
     filter_low_score_bboxes(bbox_json_file, threshold) 
-    cut_images, bbox_id_list = get_cut_images_from_bboxes(infer_dir, bbox_json_file)
+    cut_images, bbox_id_list = get_cut_images_from_pre_bboxes(infer_dir, bbox_json_file)
     return cut_images, bbox_id_list
 
 
-def get_cut_images_from_bboxes(infer_dir, bbox_json_file):
+def get_cut_images_from_pre_bboxes(infer_dir, bbox_json_file):
     """
     the function will be uesd to cut images for spine fracture classify.
     infer_dir: The infer images.

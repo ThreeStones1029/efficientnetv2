@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-11 08:09:16
 LastEditors: ShuaiLei
-LastEditTime: 2024-04-29 08:10:48
+LastEditTime: 2024-05-04 10:11:22
 '''
 import os
 import json
@@ -36,3 +36,11 @@ def get_sub_folder_paths(root_folder):
         if os.path.isdir(os.path.join(root_folder, sub_folder_name)):
             sub_folder_paths.append(os.path.join(root_folder, sub_folder_name))
     return sub_folder_paths 
+
+
+def create_folder(path):
+    os.makedirs(path, exist_ok=True)
+    return path
+
+def join(*args):
+    return os.path.join(*args)

@@ -129,7 +129,9 @@ def main(args):
             #     train_best_model_acc = train_acc
         else:
             if epoch % args.snapshot_epoch == 0:
-                torch.save(model.state_dict(), os.path.join(args.model_save_dir, ".model-{}.pth".format(epoch)))
+                torch.save(model.state_dict(), os.path.join(args.model_save_dir, "model-{}.pth".format(epoch)))
+        if epoch == args.epochs - 1:
+            torch.save(model.state_dict(), os.path.join(args.model_save_dir, "final_model.pth"))
     print("[*] The val best model acc is {}".format(val_best_model_acc))
     print("[*] The train best model acc is {}".format(train_best_model_acc))
 
@@ -144,12 +146,12 @@ if __name__ == '__main__':
     parser.add_argument('--snapshot_epoch', type=int, default=5)
     parser.add_argument('--only_save_best_model', type=bool, default=True)
     # dataset path
-    parser.add_argument('--data-path', type=str, default="dataset/spine_fracture/cut_drr/all")
+    parser.add_argument('--data-path', type=str, default="dataset/spine_fracture/cut_xray")
     # download model pre_weights
-    parser.add_argument('--pretrain_weights', type=str, default='pretrain_model_imagenet/pre_efficientnetv2-m.pth', help='pretrain weights path')
-    parser.add_argument("--weights_category", type=str, default="m", help="the pretrain weights category, only s or m or l")
-    parser.add_argument('--model_save_dir', type=str, default="weights/spine_fracture/test", help="trained models save path")
-    parser.add_argument('--log_dir', type=str, default="runs/spine_fracture/test", help="tensorboard logdir save path")
+    parser.add_argument('--pretrain_weights', type=str, default='pretrain_model_imagenet/pre_efficientnetv2-l.pth', help='pretrain weights path')
+    parser.add_argument("--weights_category", type=str, default="l", help="the pretrain weights category, only s or m or l")
+    parser.add_argument('--model_save_dir', type=str, default="weights/spine_fracture/xray/l", help="trained models save path")
+    parser.add_argument('--log_dir', type=str, default="runs/spine_fracture/xray/l", help="tensorboard logdir save path")
     parser.add_argument('--freeze-layers', type=bool, default=True)
     parser.add_argument('--device', default='cuda:1', help='device id (i.e. 0 or 0,1 or cpu)')
     opt = parser.parse_args()
