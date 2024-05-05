@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-12 08:28:55
 LastEditors: ShuaiLei
-LastEditTime: 2024-05-05 10:29:06
+LastEditTime: 2024-05-05 13:51:41
 '''
 import os
 import sys
@@ -23,23 +23,18 @@ from tools.bbox.bbox_process import get_cut_bbox
 from tools.vis.bbox_pre_visualize import draw_bbox
 
 
-def get_detection_result_from_gt(infer_dir, gt_bbox_json_file):
+def get_detection_result_from_gt(infer_dir, gt_detection_data, classify_catname2catid, detection_catid2catname):
     """
     the function will be used to get truth labels about fracture status in test images vertebraes.
     param: infer_dir: The infer images.
-    param: gt_bbox_json_file: the gt bbox json file.
+    param: gt_detection_data: the gt bboxes.
+    param: classify_catname2catid: the classify category name to category id dict.
     """
-    gt_detection_data = COCO(gt_bbox_json_file)
     imgToAnns = gt_detection_data.imgToAnns
-    detection_catid2catname = {}
-    for category in gt_detection_data.dataset["categories"]:
-        detection_catid2catname[category["id"]] = category["name"]
     # record vertebrae bbox id
     vertebrae_bbox_id_list = []
     cut_images_list = []
     cut_images_classify_label_list = []
-    classify_catid2catname = load_json_file('./class_indices.json')
-    classify_catname2catid = {catname:catid for catid, catname in classify_catid2catname.items()}
     for img_id, anns in imgToAnns.items():
         file_name = gt_detection_data.loadImgs(img_id)[0]["file_name"]
         image = Image.open(os.path.join(infer_dir, file_name)).convert('RGB')
@@ -57,7 +52,13 @@ def get_detection_result_from_gt(infer_dir, gt_bbox_json_file):
  
 
 def main(args):
-    test_cut_images, test_cut_images_class, vertebrae_bbox_id_list = get_detection_result_from_gt(args.infer_dir, args.gt_bbox_json_file)
+    gt_detection_data = COCO(args.gt_bbox_json_file)
+    classify_catid2catname = load_json_file('./class_indices.json')
+    classify_catname2catid = {catname:catid for catid, catname in classify_catid2catname.items()}
+    detection_catid2catname = {}
+    for category in gt_detection_data.dataset["categories"]:
+        detection_catid2catname[category["id"]] = category["name"]
+    test_cut_images, test_cut_images_class, vertebrae_bbox_id_list = get_detection_result_from_gt(args.infer_dir, gt_detection_data, classify_catname2catid, detection_catid2catname)
     classify_bbox_id2detect_bbox_id = {i: vertebrae_bbox_id for i, vertebrae_bbox_id in enumerate(vertebrae_bbox_id_list)}
 
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
@@ -109,32 +110,50 @@ def main(args):
             pred = model(images.to(device))
             pred_classes = torch.max(pred, dim=1)[1]
             accu_num += torch.eq(pred_classes, labels.to(device)).sum()
+            pred_scores = torch.max(torch.softmax(pred, dim=1), dim=1)[0]
+            all_pred_classes += pred_classes.cpu()
+            all_pred_scores += pred_scores.cpu()
         eval_acc = accu_num.item() / sample_num
-        print("[*] The best model acc is {}".format(eval_acc))
-
-    class_indict = load_json_file('./class_indices.json')
-    detection_data = PreCOCO(args.bbox_json_file)
-    ann_idToann = detection_data.ann_idToann
 
     bboxes_fracture_info = []
+    ann_idToann = {}
+    for ann in gt_detection_data.dataset["annotations"]:
+        ann_idToann[ann["id"]] = ann
+    fracture_true_num = 0
+    fracture_num = 0 
+    normal_true_num = 0
+    normal_num = 0
+    # The classification prediction results of the cropped vertebral images are saved
     for classify_bbox_id, cut_image in enumerate(test_cut_images):
-        # get bbox id in detection result
+        # Obtain the bbox_id in the detection of the bbox_id of the current predicted vertebra
         detection_bbox_id = classify_bbox_id2detect_bbox_id[classify_bbox_id]
         predict_class = all_pred_classes[classify_bbox_id].numpy()
-        score = all_pred_scores[classify_bbox_id].numpy()
+        fracture_prob = all_pred_scores[classify_bbox_id].numpy()
         ann = ann_idToann[detection_bbox_id]
-        ann["status"] = class_indict[str(predict_class)].split("_")[0]
-        ann["fracture_prob"] = float(score)
+        file_name = gt_detection_data.loadImgs(ann["image_id"])[0]["file_name"]
+        category_name = detection_catid2catname[ann["category_id"]]
+        ann["status"] = classify_catid2catname[str(predict_class)].split("_")[0]
+        ann["fracture_prob"] = float(fracture_prob)
+        ann["file_name"] = file_name
+        ann["category_name"] = category_name
+        ann["score"] = 1.0
         bboxes_fracture_info.append(ann)
-        print("file_name: {}, ann_id: {}, category_name: {}, status: {} fracture_prob: {:.3}".format(ann["file_name"], ann["id"], ann["category_name"], class_indict[str(predict_class)], score))
-    # add rib pelvis and bone_cement into bboxes_fracture_info
-    for ann in detection_data.dataset["annotations"]:
-        if ann["category_name"] != "vertebrae":
-            ann["status"] = "not vertebrae"
-            ann["fracture_prob"] = 0
-            bboxes_fracture_info.append(ann)
+        if category_name == "fracture":
+            fracture_num += 1
+            if category_name == ann["status"]:
+                fracture_true_num += 1  
+        if category_name == "normal":
+            normal_num += 1
+            if category_name == ann["status"]:
+                normal_true_num += 1   
+        print("file_name: {}, ann_id: {}, category_name: {}, status: {} fracture_prob: {:.3}".format(file_name, ann["id"], category_name, ann["status"], fracture_prob))
+    print("fracture acc is {}".format(fracture_true_num / fracture_num))
+    print("normal acc is {}".format(normal_true_num / normal_num))
+    print("The overall acc is {}".format(eval_acc))
+    # save classify result to json file.
     if args.save_results:
         save_json_file(bboxes_fracture_info, os.path.join(args.output_dir, "bbox.json"))
+    # visualize detection and classify result
     if args.visualize:
         detection_classify_data = PreCOCO(bboxes_fracture_info)
         img_idToFilename = detection_classify_data.img_idToFilename
