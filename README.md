@@ -4,7 +4,7 @@
  * @Author: ThreeStones1029 2320218115@qq.com
  * @Date: 2024-03-31 04:04:02
  * @LastEditors: ShuaiLei
- * @LastEditTime: 2024-04-24 14:35:48
+ * @LastEditTime: 2024-05-05 06:15:12
 -->
 ## Repository Notes
 This article will be used to record fracture detection. The overall process will be to first detect and then classify the vertebral body in the detection box to determine whether it is fractured or not.
@@ -15,7 +15,6 @@ This article will be used to record fracture detection. The overall process will
 <summary> see details </summary>
 
 - [x] Upload drr detection weights.
-- [x] add rtdetr_torch detection predict.
 - [x] add yolov5 detection predict.
 - [x] add detection training.
 
@@ -78,6 +77,7 @@ python eval.py
 
 <details>
 <summary>Detection classify</summary>
+you can choose run rtdetr_paddle or rtdetr_pytorch
 
 ```bash
 python detection classify.py
