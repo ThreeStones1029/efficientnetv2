@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-12 08:28:55
 LastEditors: ShuaiLei
-LastEditTime: 2024-05-04 14:47:28
+LastEditTime: 2024-05-05 05:55:04
 '''
 import os
 import sys
@@ -80,7 +80,8 @@ def get_cut_images_from_pre_bboxes(infer_dir, bbox_json_file):
     """
     detection_data = PreCOCO(bbox_json_file)
     imgToAnns = detection_data.imgToAnns
-    bbox_id_list = []
+    # record vertebrae bbox id
+    vertebrae_bbox_id_list = []
     cut_images = []
     for img_id, anns in imgToAnns.items():
         image = Image.open(os.path.join(infer_dir, anns[0]["file_name"])).convert('RGB')
@@ -90,13 +91,14 @@ def get_cut_images_from_pre_bboxes(infer_dir, bbox_json_file):
                 print(ann["category_name"])
                 cut_bbox = get_cut_bbox(ann["bbox"], width, height, expand_coefficient=1.5)
                 cut_image = image.crop((cut_bbox[0], cut_bbox[1], cut_bbox[2], cut_bbox[3]))
-                bbox_id_list.append(ann["id"])
+                vertebrae_bbox_id_list.append(ann["id"])
                 cut_images.append(cut_image)
-    return cut_images, bbox_id_list
+    return cut_images, vertebrae_bbox_id_list
     
 
 def main(args):
-    test_cut_images, bbox_id_list = get_detection_result(args.infer_dir, args.is_run_detection, args.detection_model, args.output_dir, args.bbox_json_file, args.draw_threshold)
+    test_cut_images, vertebrae_bbox_id_list = get_detection_result(args.infer_dir, args.is_run_detection, args.detection_model, args.output_dir, args.bbox_json_file, args.draw_threshold)
+    classify_bbox_id2detect_bbox_id = {i: vertebrae_bbox_id for i, vertebrae_bbox_id in enumerate(vertebrae_bbox_id_list)}
 
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
     img_size = {"s": [300, 384],  # train_size, val_size
@@ -151,14 +153,22 @@ def main(args):
     ann_idToann = detection_data.ann_idToann
 
     bboxes_fracture_info = []
-    for i, cut_image in enumerate(test_cut_images):
-        predict_class = all_pred_classes[i].numpy()
-        score = all_pred_scores[i].numpy()
-        ann = ann_idToann[i]
+    for classify_bbox_id, cut_image in enumerate(test_cut_images):
+        # get bbox id in detection result
+        detection_bbox_id = classify_bbox_id2detect_bbox_id[classify_bbox_id]
+        predict_class = all_pred_classes[classify_bbox_id].numpy()
+        score = all_pred_scores[classify_bbox_id].numpy()
+        ann = ann_idToann[detection_bbox_id]
         ann["status"] = class_indict[str(predict_class)].split("_")[0]
         ann["fracture_prob"] = float(score)
         bboxes_fracture_info.append(ann)
         print("file_name: {}, ann_id: {}, category_name: {}, status: {} fracture_prob: {:.3}".format(ann["file_name"], ann["id"], ann["category_name"], class_indict[str(predict_class)], score))
+    # add rib pelvis and bone_cement into bboxes_fracture_info
+    for ann in detection_data.dataset["annotations"]:
+        if ann["category_name"] != "vertebrae":
+            ann["status"] = "not vertebrae"
+            ann["fracture_prob"] = 0
+            bboxes_fracture_info.append(ann)
     if args.save_results:
         save_json_file(bboxes_fracture_info, os.path.join(args.output_dir, "bbox.json"))
     if args.visualize:
