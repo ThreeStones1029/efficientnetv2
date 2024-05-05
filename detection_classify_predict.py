@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-12 08:28:55
 LastEditors: ShuaiLei
-LastEditTime: 2024-05-05 05:55:04
+LastEditTime: 2024-05-05 10:26:54
 '''
 import os
 import sys
@@ -12,6 +12,7 @@ import argparse
 import torch
 from torchvision import transforms
 import matplotlib.pyplot as plt
+from pycocotools.coco import COCO
 from tqdm import tqdm
 from PIL import Image
 from model import efficientnetv2_s, efficientnetv2_m, efficientnetv2_l
@@ -19,7 +20,7 @@ from tools.io.common import load_json_file, save_json_file
 from tools.coco.precoco import PreCOCO
 from detection.rtdetr_detection import rtdetr_paddle_infer, rtdetr_pytorch_infer
 from detection.yolov5_detection import yolov5_infer
-from my_dataset import TestDataSet
+from my_dataset import TestDataSet, MyDataSet
 from tools.bbox.bbox_process import get_cut_bbox, filter_low_score_bboxes
 from tools.vis.bbox_pre_visualize import draw_bbox
 
@@ -50,7 +51,12 @@ yolov5_infer_parameter = {"envs_path": "",
                           "config_path": ""}
 
 
-def get_detection_result(infer_dir, is_run_detection, detection_model, output_dir, bbox_json_file, threshold):
+def get_detection_result(infer_dir, 
+                         is_run_detection, 
+                         detection_model, 
+                         output_dir, 
+                         bbox_json_file, 
+                         threshold):
     """
     The function will used to get detection result.
     infer_dir: infer images save folder.
@@ -68,36 +74,41 @@ def get_detection_result(infer_dir, is_run_detection, detection_model, output_di
         if detection_model == "yolov5":
             yolov5_infer(yolov5_infer_parameter, infer_dir, output_dir)
     filter_low_score_bboxes(bbox_json_file, threshold) 
-    cut_images, bbox_id_list = get_cut_images_from_pre_bboxes(infer_dir, bbox_json_file)
-    return cut_images, bbox_id_list
+    cut_images_list, bbox_id_list = get_cut_images_from_pre_bboxes(infer_dir, bbox_json_file)
+    return cut_images_list, bbox_id_list
 
 
 def get_cut_images_from_pre_bboxes(infer_dir, bbox_json_file):
     """
     the function will be uesd to cut images for spine fracture classify.
-    infer_dir: The infer images.
+    param: infer_dir: The infer images.
     param: bbox_json_file: The detection result.
     """
-    detection_data = PreCOCO(bbox_json_file)
-    imgToAnns = detection_data.imgToAnns
+    pre_detection_data = PreCOCO(bbox_json_file)
+    imgToAnns = pre_detection_data.imgToAnns
     # record vertebrae bbox id
     vertebrae_bbox_id_list = []
-    cut_images = []
+    cut_images_list = []
     for img_id, anns in imgToAnns.items():
         image = Image.open(os.path.join(infer_dir, anns[0]["file_name"])).convert('RGB')
         width, height = image.size
         for ann in anns:
             if ann["category_name"] == "vertebrae":
-                print(ann["category_name"])
                 cut_bbox = get_cut_bbox(ann["bbox"], width, height, expand_coefficient=1.5)
                 cut_image = image.crop((cut_bbox[0], cut_bbox[1], cut_bbox[2], cut_bbox[3]))
                 vertebrae_bbox_id_list.append(ann["id"])
-                cut_images.append(cut_image)
-    return cut_images, vertebrae_bbox_id_list
-    
+                cut_images_list.append(cut_image)
+    return cut_images_list, vertebrae_bbox_id_list
+
 
 def main(args):
-    test_cut_images, vertebrae_bbox_id_list = get_detection_result(args.infer_dir, args.is_run_detection, args.detection_model, args.output_dir, args.bbox_json_file, args.draw_threshold)
+    test_cut_images, vertebrae_bbox_id_list = get_detection_result(args.infer_dir, 
+                                                                   args.is_run_detection, 
+                                                                   args.detection_model, 
+                                                                   args.output_dir, 
+                                                                   args.bbox_json_file, 
+                                                                   args.draw_threshold)
+    
     classify_bbox_id2detect_bbox_id = {i: vertebrae_bbox_id for i, vertebrae_bbox_id in enumerate(vertebrae_bbox_id_list)}
 
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
@@ -109,10 +120,9 @@ def main(args):
                                          transforms.CenterCrop(img_size[num_model][1]),
                                          transforms.ToTensor(),
                                          transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])])
-
     # 实例化验证数据集
     test_dataset = TestDataSet(images=test_cut_images,
-                               transform=data_transform)
+                                transform=data_transform)
 
     batch_size = args.batch_size
     nw = min([os.cpu_count(), batch_size if batch_size > 1 else 0, 8])  # number of workers
@@ -191,8 +201,8 @@ if __name__ == "__main__":
     # detection parameter
     parser.add_argument('--is_run_detection', type=bool, default=True, help="if run detection or not")
     parser.add_argument('--detection_model', type=str, default="rtdetr_paddle", help="the detection model")
-    parser.add_argument('--save_cut_images', type=bool, default=False, help="save or not save the detection bbox images")
     parser.add_argument('--bbox_json_file', type=str, default="infer_output/bbox.json", help="if not run detection, load the detection bbox result json")
+    parser.add_argument('--save_cut_images', type=bool, default=True, help="if true, cut images will be saved")
     parser.add_argument('--draw_threshold', type=str, default=0.6, help="the threshold used to filter bbox and visualize")
     # Classification paramater
     parser.add_argument('--device', default='cuda:3', help='device id (i.e. 0 or 0,1 or cpu)')

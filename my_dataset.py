@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-03-31 04:04:02
 LastEditors: ShuaiLei
-LastEditTime: 2024-04-24 12:23:57
+LastEditTime: 2024-05-05 08:36:02
 '''
 from PIL import Image
 import torch
@@ -13,16 +13,19 @@ from torch.utils.data import Dataset
 
 class MyDataSet(Dataset):
     """自定义数据集"""
-    def __init__(self, images_path: list, images_class: list, transform=None):
+    def __init__(self, images:list=None, images_path: list=None, images_class: list=None, transform=None):
+        self.images = images
         self.images_path = images_path
         self.images_class = images_class
         self.transform = transform
 
     def __len__(self):
-        return len(self.images_path)
+        return len(self.images_path) if self.images_path else len(self.images)
 
     def __getitem__(self, item):
-        img = Image.open(self.images_path[item])
+        img = Image.open(self.images_path[item]) if self.images_path else self.images[item]
+        if img.mode != 'RGB':
+            img = img.convert('RGB')
         # RGB为彩色图片，L为灰度图片
         if img.mode != 'RGB':
             raise ValueError("image: {} isn't RGB mode.".format(self.images_path[item]))
