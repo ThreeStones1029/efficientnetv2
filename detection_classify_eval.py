@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-12 08:28:55
 LastEditors: ShuaiLei
-LastEditTime: 2024-05-05 13:51:41
+LastEditTime: 2024-05-06 14:27:00
 '''
 import os
 import sys
@@ -138,6 +138,7 @@ def main(args):
         ann["category_name"] = category_name
         ann["score"] = 1.0
         bboxes_fracture_info.append(ann)
+        # compute fracture and normal accuracy
         if category_name == "fracture":
             fracture_num += 1
             if category_name == ann["status"]:
@@ -163,7 +164,7 @@ def main(args):
         # PIL默认读取为灰度图
             image = Image.open(imid2path[image_id]).convert('RGB')
             bboxes = imgToAnns[image_id]
-            vis_image = draw_bbox(image, bboxes)
+            vis_image = draw_bbox(image, bboxes, fontsize=30)
             vis_image.save(os.path.join(args.output_dir, os.path.basename(imid2path[image_id])))
 
 
@@ -177,8 +178,8 @@ if __name__ == "__main__":
     parser.add_argument('--device', default='cuda:3', help='device id (i.e. 0 or 0,1 or cpu)')
     parser.add_argument('--num_classes', type=int, default=2)
     parser.add_argument('--batch-size', type=int, default=8)
-    parser.add_argument("--weights_category", type=str, default="l", help="the pretrain weights category, only s or m or l")
-    parser.add_argument('--model_path', type=str, default="weights/spine_fracture/xray/l/val_best_model.pth", help="infer weight path")
+    parser.add_argument("--weights_category", type=str, default="m", help="the pretrain weights category, only s or m or l")
+    parser.add_argument('--model_path', type=str, default="weights/spine_fracture/xray/m/val_best_model.pth", help="infer weight path")
     parser.add_argument('--output_dir', type=str, default="infer_output", help="infer image save path")
     parser.add_argument('--visualize', type=bool, default=True, help="whether visualize result")
     parser.add_argument('--save_results', type=bool, default=True, help="whether save detection and fracture result")
