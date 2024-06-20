@@ -1,14 +1,19 @@
 '''
-Description: 
+Description: 这个文件用于将buu的标注转换label_studio读取的json格式
 version: 
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-06-19 07:20:09
 LastEditors: ShuaiLei
-LastEditTime: 2024-06-19 14:04:31
+LastEditTime: 2024-06-20 07:41:22
 '''
 import pandas as pd
 import os
-import json
+import sys
+current_file_path = os.path.abspath(__file__)
+project_root = os.path.join(os.path.dirname(os.path.dirname(current_file_path)), "..")
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+from tools.io.common import save_json_file
 from PIL import Image
 
 
@@ -77,7 +82,7 @@ def xlsx2label_studio(xlsx_annotation_file, label_studio_annotation_file, images
             single_data["annotations"][0]["id"] = annotation_id
             single_data["annotations"][0]["import_id"] = import_id
             single_data["annotations"][0]["task"] = image_id
-            single_data["data"]["type"] = file_name2type[LA_df.loc[i, "filename"]] if LA_df.loc[i, "filename"] in file_name2type else None
+            single_data["data"]["L4L6"] = file_name2type[LA_df.loc[i, "filename"]] if LA_df.loc[i, "filename"] in file_name2type else None
             single_data["data"]["Pixel Spacing"] = file_name2pixelspacing[LA_df.loc[i, "filename"][:-1]]
             file_name = LA_df.loc[i, "filename"] + ".jpg"
             image = Image.open(os.path.join(images_folder, file_name)).convert('RGB')
@@ -115,11 +120,11 @@ def xlsx2label_studio(xlsx_annotation_file, label_studio_annotation_file, images
             annotation_id += 1
             import_id += 1
 
-    with open(label_studio_annotation_file, "w") as f:
-        json.dump(gt_data, f)
+    save_json_file(gt_data, label_studio_annotation_file)
+    
             
 
 if __name__ == "__main__":
     xlsx2label_studio("dataset/spine_fracture/KIOM2022_dataset_report.xlsx",
-                      "dataset/spine_fracture/label_studio_import.json", 
+                      "dataset/spine_fracture/buu_label_studio_import.json", 
                       "dataset/spine_fracture/LA_preoperative_xray_fracture/BUU")
