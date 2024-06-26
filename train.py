@@ -14,7 +14,6 @@ from tools.data.dataset_process import read_split_dataset
 
 def main(args):
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
-
     print(args)
     print('Start Tensorboard with "tensorboard --logdir=runs", view at http://localhost:6006/')
     tb_writer = SummaryWriter(log_dir=args.log_dir)
@@ -22,8 +21,8 @@ def main(args):
         os.makedirs(args.model_save_dir)
 
     train_images_path, train_images_label, val_images_path, val_images_label = read_split_dataset(args.data_path, 
-                                                                                                  split_ratio={"train": 0.8, "val": 0.2}, 
-                                                                                                  resplit=False, 
+                                                                                                  split_ratio={"train": 0.6, "val": 0.2, "test": 0.2}, 
+                                                                                                  resplit=True, 
                                                                                                   save_txt=True)
 
     img_size = {"s": [300, 384],  # train_size, val_size
@@ -141,19 +140,19 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--num_classes', type=int, default=2)
-    parser.add_argument('--epochs', type=int, default=200)
+    parser.add_argument('--epochs', type=int, default=300)
     parser.add_argument('--batch-size', type=int, default=8)
     parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--lrf', type=float, default=0.01)
     parser.add_argument('--snapshot_epoch', type=int, default=5)
     parser.add_argument('--only_save_best_model', type=bool, default=True)
     # dataset path
-    parser.add_argument('--data-path', type=str, default="dataset/spine_fracture/cut_xray/train_val")
+    parser.add_argument('--data-path', type=str, default="dataset/spine_fracture/drr")
     # download model pre_weights
-    parser.add_argument('--pretrain_weights', type=str, default='pretrain_model_imagenet/pre_efficientnetv2-m.pth', help='pretrain weights path')
-    parser.add_argument("--weights_category", type=str, default="m", help="the pretrain weights category, only s or m or l")
-    parser.add_argument('--model_save_dir', type=str, default="weights/spine_fracture/xray/m", help="trained models save path")
-    parser.add_argument('--log_dir', type=str, default="runs/spine_fracture/xray/m", help="tensorboard logdir save path")
+    parser.add_argument('--pretrain_weights', type=str, default='pretrain_model_imagenet/pre_efficientnetv2-s.pth', help='pretrain weights path')
+    parser.add_argument("--weights_category", type=str, default="s", help="the pretrain weights category, only s or m or l")
+    parser.add_argument('--model_save_dir', type=str, default="weights/spine_fracture/drr/s", help="trained models save path")
+    parser.add_argument('--log_dir', type=str, default="runs/spine_fracture/drr/s", help="tensorboard logdir save path")
     parser.add_argument('--freeze-layers', type=bool, default=True)
     parser.add_argument('--device', default='cuda:1', help='device id (i.e. 0 or 0,1 or cpu)')
     opt = parser.parse_args()

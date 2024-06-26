@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-19 05:08:26
 LastEditors: ShuaiLei
-LastEditTime: 2024-05-11 12:26:41
+LastEditTime: 2024-06-26 14:35:27
 '''
 import os
 import json
@@ -140,4 +140,4 @@ def read_split_dataset(root_folder, split_ratio = {"train": 0.6, "val": 0.2, "te
 
 
 if __name__ == "__main__":
-    read_split_dataset("dataset/spine_fracture/cut_drr/all", split_ratio={"train": 0.6, "val": 0.2, "test": 0.2})
+    read_split_dataset("dataset/spine_fracture/drr/LA", split_ratio={"train": 0.6, "val": 0.2, "test": 0.2})
