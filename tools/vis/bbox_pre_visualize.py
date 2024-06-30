@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-18 13:35:20
 LastEditors: ShuaiLei
-LastEditTime: 2024-05-06 11:49:06
+LastEditTime: 2024-06-30 10:05:08
 '''
 import numpy as np
 from PIL import ImageDraw, ImageFont
@@ -45,13 +45,13 @@ def draw_bbox(image, bboxes, fontsize=20):
         left, top, right, bottom = draw.textbbox((0, 0), text, font=font)
         tw, th = right - left, bottom - top
         #label框
-        draw.rectangle([(xmin + 1, ymin + 1), (xmin + tw + 1, ymin + th + 1 + 10)], fill='white') 
+        draw.rectangle([(xmin + w, ymin), (xmin + tw + w, ymin + th + 10)], fill='white') 
         # draw.rectangle([(xmin + 1, ymin - th), (xmin + tw + 1, ymin)], fill = color)
         # label文字 
         # (xmin + 1, ymin - th)
         if status == "fracture":
-            draw.text((xmin + 1, ymin + 1), text, fill='black', font=font) 
+            draw.text((xmin + w, ymin), text, fill='black', font=font) 
         else:
-            draw.text((xmin + 1, ymin + 1), text, fill='red', font=font) 
+            draw.text((xmin + w, ymin), text, fill='red', font=font) 
 
     return image

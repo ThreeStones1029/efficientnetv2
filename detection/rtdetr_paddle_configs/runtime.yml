@@ -3,7 +3,7 @@ use_xpu: false
 use_mlu: false
 use_npu: false
 log_iter: 20
-save_dir:  output/fracture_dataset/semantic
+save_dir:  output/Fracture_dataset/semantic
 snapshot_epoch: 20
 print_flops: false
 print_params: false

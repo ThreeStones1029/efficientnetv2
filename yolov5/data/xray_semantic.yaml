@@ -1,0 +1,15 @@
+# Train/val/test sets as 1) dir: path/to/imgs, 2) file: path/to/imgs.txt, or 3) list: [path/to/imgs1, path/to/imgs2, ..]
+path: ../datasets/miccai # dataset root dir
+train: images/train_semantic # train images (relative to 'path') 128 images
+val: images/val_semantic # val images (relative to 'path') 128 images
+# test: test # test images (optional)
+
+# Classes
+names:
+  0: vertebrae
+  1: pelvis
+  2: bone_cement
+  3: rib
+
+# # Download script/URL (optional)
+# download: https://ultralytics.com/assets/coco128.zip

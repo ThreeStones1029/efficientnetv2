@@ -1,0 +1,35 @@
+# Train/val/test sets as 1) dir: path/to/imgs, 2) file: path/to/imgs.txt, or 3) list: [path/to/imgs1, path/to/imgs2, ..]
+path: ../datasets/xray20240119 # dataset root dir
+train: images/train_instance # train images (relative to 'path') 128 images
+val: images/val_instance # val images (relative to 'path') 128 images
+# test: test # test images (optional)
+
+# Classes
+names:
+  0: L5
+  1: L4
+  2: L3
+  3: L2
+  4: L1
+  5: T12
+  6: T11
+  7: T10
+  8: T9
+  9: T8
+  10: T7
+  11: T6
+  12: T5
+  13: T4
+  14: T3
+  15: T2
+  16: T1
+  17: C7
+  18: C6
+  19: C5
+  20: C4
+  21: C3
+  22: C2
+  23: C1
+
+# # Download script/URL (optional)
+# download: https://ultralytics.com/assets/coco128.zip

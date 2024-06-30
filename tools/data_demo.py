@@ -1,3 +1,11 @@
+'''
+Description: 
+version: 
+Author: ThreeStones1029 2320218115@qq.com
+Date: 2024-05-04 10:13:06
+LastEditors: ShuaiLei
+LastEditTime: 2024-06-30 07:16:13
+'''
 import root_path
 from tools.data.label_studio import rename_images_in_coco_json_file
 from tools.data.cut_images_from_bbox import get_cut_images_from_gt_bboxes
@@ -15,6 +23,6 @@ if __name__ == "__main__":
     #                           output_folder_path="dataset/spine_fracture/xray",
     #                           split_info_dict={"train_val": 0.8, "test":0.2})
     # cut train_val images for training classify model
-    get_cut_images_from_gt_bboxes("dataset/spine_fracture/xray/train_val",
-                                  "dataset/spine_fracture/xray/annotations/bbox_train_val.json",
-                                  "dataset/spine_fracture/cut_xray/train_val")
+    get_cut_images_from_gt_bboxes("dataset/spine_fracture/LA_preoperative_xray_fracture",
+                                  "dataset/spine_fracture/LA_preoperative_xray_fracture.json",
+                                  "dataset/spine_fracture/LA_preoperative_xray_fracture_cut")

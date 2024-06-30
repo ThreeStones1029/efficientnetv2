@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-05-04 10:28:05
 LastEditors: ShuaiLei
-LastEditTime: 2024-05-04 12:04:20
+LastEditTime: 2024-06-30 07:19:53
 '''
 import os
 from pycocotools.coco import COCO
@@ -33,7 +33,7 @@ def get_cut_images_from_gt_bboxes(images_folder, coco_json_file, cut_images_fold
             cut_bbox = get_cut_bbox(ann["bbox"], width, height, expand_coefficient=1.5)
             cut_image = image.crop((cut_bbox[0], cut_bbox[1], cut_bbox[2], cut_bbox[3]))
             i += 1
-            if ann["category_id"] == 0:
-                cut_image.save(os.path.join(fracture_images_folder, file_name + "_" + str(i) + ".png"))
-            if ann["category_id"] == 1:
-                cut_image.save(os.path.join(normal_images_folder, file_name + "_" + str(i) + ".png"))
+            if ann["category_name"] == "fracture":
+                cut_image.save(os.path.join(fracture_images_folder, file_name.split(".")[0] + "_" + str(i) + ".png"))
+            if ann["category_name"] == "normal":
+                cut_image.save(os.path.join(normal_images_folder, file_name.split(".")[0] + "_" + str(i) + ".png"))
