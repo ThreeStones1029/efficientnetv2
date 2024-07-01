@@ -4,7 +4,7 @@
  * @Author: ThreeStones1029 2320218115@qq.com
  * @Date: 2024-03-31 04:04:02
  * @LastEditors: ShuaiLei
- * @LastEditTime: 2024-05-05 06:15:12
+ * @LastEditTime: 2024-07-01 15:23:27
 -->
 ## Repository Notes
 This article will be used to record fracture detection. The overall process will be to first detect and then classify the vertebral body in the detection box to determine whether it is fractured or not.
@@ -87,7 +87,13 @@ python detection classify.py
 
 ## Using examples
 <div style="display: flex;">
-    <img src="document/AP_example1.png" alt="Image 1" width="400"; padding: 5px;">
-    <img src="document/LA_example1.png" alt="Image 2" width="400"; padding: 5px;">
+    <img src="document/LA_drr_example.png" alt="Image 1" width="400"; padding: 5px;">
+    <img src="document/AP_drr_example.png" alt="Image 2" width="400"; padding: 5px;">
+</div>
+
+<div style="display: flex;">
+    <img src="document/LA_preoperative_xray_example.jpg" alt="Image 3" width="300"; padding: 5px;">
+    <img src="document/LA_preoperative_xray_example2.png" alt="Image 4" width="400";padding: 5px;">
+    
 </div>
 </details>
