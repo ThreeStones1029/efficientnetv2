@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-12 08:28:55
 LastEditors: ShuaiLei
-LastEditTime: 2024-06-30 12:11:15
+LastEditTime: 2024-07-01 13:42:38
 '''
 import os
 import sys
@@ -219,7 +219,7 @@ if __name__ == "__main__":
     parser.add_argument('--save_cut_images', type=bool, default=True, help="if true, cut images will be saved")
     parser.add_argument('--draw_threshold', type=float, default=0.6, help="the threshold used to filter bbox and visualize")
     # Classification paramater
-    parser.add_argument('--bbox_expand_coefficient', type=float, default=1.1, help="the cut bbox expand_coefficient")
+    parser.add_argument('--bbox_expand_coefficient', type=float, default=1.5, help="the cut bbox expand_coefficient")
     parser.add_argument('--device', default='cuda:3', help='device id (i.e. 0 or 0,1 or cpu)')
     parser.add_argument('--num_classes', type=int, default=2)
     parser.add_argument('--batch-size', type=int, default=8)
