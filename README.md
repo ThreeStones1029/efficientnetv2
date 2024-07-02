@@ -93,7 +93,7 @@ python detection classify.py
 
 <div style="display: flex;">
     <img src="document/LA_preoperative_xray_example.jpg" alt="Image 3" width="300"; padding: 5px;">
-    <img src="document/LA_preoperative_xray_example2.png" alt="Image 4" width="492";padding: 5px;">
+    <img src="document/LA_preoperative_xray_example2.png" alt="Image 4" width="493";padding: 5px;">
     
 </div>
 </details>
