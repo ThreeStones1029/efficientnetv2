@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-02 13:58:48
 LastEditors: ShuaiLei
-LastEditTime: 2024-06-30 12:03:35
+LastEditTime: 2024-07-08 08:43:37
 '''
 import os
 import sys
@@ -106,9 +106,9 @@ if __name__ == '__main__':
     parser.add_argument('--batch-size', type=int, default=1)
     # 数据集所在根目录
     parser.add_argument('--eval_dir', type=str, default=None, help="eval images folder directory")
-    parser.add_argument('--eval_txt', type=str, default="dataset/spine_fracture/LA_preoperative_xray_fracture_cut/test.txt", help="eval images and labels txt file")
+    parser.add_argument('--eval_txt', type=str, default="dataset/spine_fracture/drr/test.txt", help="eval images and labels txt file")
     parser.add_argument('--class_indict_file', type=str, default="./class_indices.json", help="The class name and label id dict")
     parser.add_argument("--weights_category", type=str, default="s", help="the pretrain weights category, only s or m or l")
-    parser.add_argument('--model_path', type=str, default="weights/spine_fracture/LA_preoperative_xray_fracture_cut/s/val_best_model.pth", help="infer weight path")
+    parser.add_argument('--model_path', type=str, default="weights/spine_fracture/drr/s/val_best_model.pth", help="infer weight path")
     opt = parser.parse_args()
     main(opt)

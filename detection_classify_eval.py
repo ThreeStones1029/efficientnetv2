@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-12 08:28:55
 LastEditors: ShuaiLei
-LastEditTime: 2024-06-29 11:49:51
+LastEditTime: 2024-07-08 08:41:56
 '''
 import os
 import sys
@@ -178,8 +178,8 @@ if __name__ == "__main__":
     parser.add_argument('--device', default='cuda:3', help='device id (i.e. 0 or 0,1 or cpu)')
     parser.add_argument('--num_classes', type=int, default=2)
     parser.add_argument('--batch-size', type=int, default=8)
-    parser.add_argument("--weights_category", type=str, default="m", help="the pretrain weights category, only s or m or l")
-    parser.add_argument('--model_path', type=str, default="weights/spine_fracture/drr/l/val_best_model.pth", help="infer weight path")
+    parser.add_argument("--weights_category", type=str, default="s", help="the pretrain weights category, only s or m or l")
+    parser.add_argument('--model_path', type=str, default="weights/spine_fracture/drr/s/val_best_model.pth", help="infer weight path")
     parser.add_argument('--output_dir', type=str, default="infer_output", help="infer image save path")
     parser.add_argument('--visualize', type=bool, default=True, help="whether visualize result")
     parser.add_argument('--save_results', type=bool, default=True, help="whether save detection and fracture result")
