@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-07-04 13:53:58
 LastEditors: ShuaiLei
-LastEditTime: 2024-07-04 15:25:40
+LastEditTime: 2024-07-05 07:37:40
 '''
 import os
 import numpy as np
@@ -27,7 +27,6 @@ def main(args):
     if args.weights_category == "l":
         model = efficientnetv2_l(num_classes=args.num_classes)
     model.load_state_dict(torch.load(args.model_path, map_location=device))
-    print(model)
     target_layers = [model.head[0]]
 
     img_size = {"s": [300, 384],  # train_size, val_size
@@ -52,20 +51,19 @@ def main(args):
     input_tensor = torch.unsqueeze(img_tensor, dim=0)
 
     cam = GradCAM(model=model, target_layers=target_layers, use_cuda=True)
-    target_category = 1  # tabby, tabby cat
+    target_category = None  # tabby, tabby cat
     print(input_tensor.shape)
     grayscale_cam = cam(input_tensor=input_tensor, target_category=target_category)
 
     grayscale_cam = grayscale_cam[0, :]
     # Resize grayscale_cam to match the original image size
-    # grayscale_cam_resized = cv2.resize(grayscale_cam, (original_img_np.shape[1], original_img_np.shape[0]))
-
+    img = np.array(img, dtype=np.float32) / 255.0 
     # Resize grayscale_cam to match the original image size using PIL
-    img = np.array(img, dtype=np.float32) / 255.0
     grayscale_cam_pil = Image.fromarray(np.uint8(255 * grayscale_cam))
     grayscale_cam_resized_pil = grayscale_cam_pil.resize((img.shape[1], img.shape[0]), Image.BILINEAR)
     grayscale_cam_resized = np.array(grayscale_cam_resized_pil) / 255.0
-
+    print(img.shape)
+    print(grayscale_cam_resized.shape)
     visualization = show_cam_on_image(img,
                                       grayscale_cam_resized,
                                       use_rgb=True)
