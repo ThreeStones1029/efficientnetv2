@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-06-19 14:17:03
 LastEditors: ShuaiLei
-LastEditTime: 2024-06-20 07:43:20
+LastEditTime: 2024-07-10 08:07:08
 '''
 import os
 import sys
@@ -55,8 +55,8 @@ def vindr_spinex_predict2label_studio(predict_json_file, label_studio_annotation
                         "result": [],
                         "was_cancelled": False,
                         "ground_truth": True,
-                        "created_at": "2024-06-19T12:38:08.667557Z",
-                        "updated_at": "2024-06-19T12:38:08.667577Z",
+                        "created_at": "2024-07-10T12:38:08.667557Z",
+                        "updated_at": "2024-07-10T12:38:08.667577Z",
                         "draft_created_at": None,
                         "lead_time": None,
                         "import_id": cur_import_id,
@@ -97,6 +97,6 @@ def vindr_spinex_predict2label_studio(predict_json_file, label_studio_annotation
            
 
 if __name__ == "__main__":
-   vindr_spinex_predict2label_studio("dataset/spine_fracture/vindr_spinex_predict_bbox.json",
+   vindr_spinex_predict2label_studio("dataset/spine_fracture/TD_fracture_18_clahe_logic_predict.json",
                                      "dataset/spine_fracture/buu_label_studio_import.json",
                                      "dataset/spine_fracture/LA_preoperative_xray_fracture/vindr-spinex")
