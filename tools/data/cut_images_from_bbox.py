@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-05-04 10:28:05
 LastEditors: ShuaiLei
-LastEditTime: 2024-07-01 09:14:30
+LastEditTime: 2024-07-14 02:40:42
 '''
 import os
 from pycocotools.coco import COCO
@@ -29,8 +29,6 @@ def get_cut_images_from_gt_bboxes(images_folder, coco_json_file, cut_images_fold
         image = Image.open(os.path.join(images_folder, file_name)).convert('RGB')
         width, height = image.size
         i = 0
-        if file_name == "No_name_00018001.bmp":
-            print(gt.imgToAnns[image_info["id"]])
         for ann in gt.imgToAnns[image_info["id"]]:
             cut_bbox = get_cut_bbox(ann["bbox"], width, height, expand_coefficient=1.5)
             cut_image = image.crop((cut_bbox[0], cut_bbox[1], cut_bbox[2], cut_bbox[3]))

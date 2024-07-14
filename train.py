@@ -9,7 +9,7 @@ import torch.optim.lr_scheduler as lr_scheduler
 from model import efficientnetv2_s, efficientnetv2_m, efficientnetv2_l
 from my_dataset import MyDataSet
 from utils import train_one_epoch, evaluate
-from tools.data.dataset_process import read_split_dataset
+from tools.data.dataset_process import read_split_dataset, read_from_split_folder
 
 
 def main(args):
@@ -20,11 +20,11 @@ def main(args):
     if os.path.exists(args.model_save_dir) is False:
         os.makedirs(args.model_save_dir)
 
-    train_images_path, train_images_label, val_images_path, val_images_label = read_split_dataset(args.data_path, 
-                                                                                                  split_ratio={"train": 0.7, "val": 0.3}, 
-                                                                                                  resplit=True, 
-                                                                                                  save_txt=True)
-
+    # train_images_path, train_images_label, val_images_path, val_images_label = read_split_dataset(args.data_path, 
+    #                                                                                               split_ratio={"train": 0.7, "val": 0.3}, 
+    #                                                                                               resplit=True, 
+    #                                                                                               save_txt=True)
+    train_images_path, train_images_label, val_images_path, val_images_label = read_from_split_folder(args.data_path)
     img_size = {"s": [300, 384],  # train_size, val_size
                 "m": [384, 480],
                 "l": [384, 480]}
@@ -148,12 +148,12 @@ if __name__ == '__main__':
 
     parser.add_argument('--only_save_best_model', type=bool, default=True)
     # dataset path
-    parser.add_argument('--data-path', type=str, default="dataset/spine_fracture/LA_xray_fracture_cut_complete")
+    parser.add_argument('--data-path', type=str, default="/home/RT-DETR/rtdetr_paddle/datasets/TD20240705_LA/cut_dataset")
     # download model pre_weights
-    parser.add_argument('--pretrain_weights', type=str, default='pretrain_model_imagenet/pre_efficientnetv2-s.pth', help='pretrain weights path')
-    parser.add_argument("--weights_category", type=str, default="s", help="the pretrain weights category, only s or m or l")
-    parser.add_argument('--model_save_dir', type=str, default="weights/spine_fracture/LA_xray_fracture_cut_complete/s", help="trained models save path")
-    parser.add_argument('--log_dir', type=str, default="runs/spine_fracture/LA_xray_fracture_cut_complete/s", help="tensorboard logdir save path")
+    parser.add_argument('--pretrain_weights', type=str, default='pretrain_model_imagenet/pre_efficientnetv2-l.pth', help='pretrain weights path')
+    parser.add_argument("--weights_category", type=str, default="l", help="the pretrain weights category, only s or m or l")
+    parser.add_argument('--model_save_dir', type=str, default="weights/spine_fracture/TD20240705_LA/l", help="trained models save path")
+    parser.add_argument('--log_dir', type=str, default="runs/spine_fracture/TD20240705_LA/l", help="tensorboard logdir save path")
     parser.add_argument('--freeze-layers', type=bool, default=True)
     parser.add_argument('--device', default='cuda:1', help='device id (i.e. 0 or 0,1 or cpu)')
     opt = parser.parse_args()

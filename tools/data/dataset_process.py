@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-19 05:08:26
 LastEditors: ShuaiLei
-LastEditTime: 2024-06-26 14:35:27
+LastEditTime: 2024-07-14 06:00:33
 '''
 import os
 import json
@@ -136,6 +136,27 @@ def read_split_dataset(root_folder, split_ratio = {"train": 0.6, "val": 0.2, "te
         # 设置柱状图的标题
         plt.title('class distribution')
         plt.savefig(os.path.join(root_folder, "class_distribution.png"))
+    return train_images_path, train_images_label, val_images_path, val_images_label
+
+
+def read_from_split_folder(root_folder):
+    """
+    
+    """
+    train_images_path, train_images_label, val_images_path, val_images_label = [], [], [], []
+
+    train_images_path = [os.path.join(root_folder, "train", "fracture_images", filename) for filename in os.listdir(os.path.join(root_folder, "train", "fracture_images"))]
+    train_images_label = [0 for i in range(len(os.path.join(root_folder, "train", "fracture_images")))]
+    for filename in os.listdir(os.path.join(root_folder, "train", "normal_images")):
+        train_images_path.append(os.path.join(root_folder, "train", "normal_images", filename))      
+        train_images_label.append(1) 
+
+    val_images_path = [os.path.join(root_folder, "test", "fracture_images", filename) for filename in os.listdir(os.path.join(root_folder, "test", "fracture_images"))]
+    val_images_label = [0 for _ in range(len(os.path.join(root_folder, "test", "fracture_images")))]
+    for filename in os.listdir(os.path.join(root_folder, "test", "normal_images")):
+        val_images_path.append(os.path.join(root_folder, "test", "normal_images", filename))      
+        val_images_label.append(1) 
+
     return train_images_path, train_images_label, val_images_path, val_images_label
 
 
