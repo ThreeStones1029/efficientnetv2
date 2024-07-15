@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-03-31 04:04:02
 LastEditors: ShuaiLei
-LastEditTime: 2024-04-19 08:00:40
+LastEditTime: 2024-07-15 12:39:18
 '''
 import os
 import sys
@@ -83,6 +83,7 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch):
 @torch.no_grad()
 def evaluate(model, data_loader, device, epoch):
     loss_function = torch.nn.CrossEntropyLoss()
+    # focal_loss_function = torch.nn.CrossEntropyLoss()
     model.eval()
     accu_num = torch.zeros(1).to(device)   # 累计预测正确的样本数
     accu_loss = torch.zeros(1).to(device)  # 累计损失

@@ -78,8 +78,7 @@ def main(args):
     if args.pretrain_weights != "":
         if os.path.exists(args.pretrain_weights):
             weights_dict = torch.load(args.pretrain_weights, map_location=device)
-            load_weights_dict = {k: v for k, v in weights_dict.items()
-                                 if model.state_dict()[k].numel() == v.numel()}
+            load_weights_dict = {k: v for k, v in weights_dict.items() if model.state_dict()[k].numel() == v.numel()}
             print(model.load_state_dict(load_weights_dict, strict=False))
         else:
             raise FileNotFoundError("not found weights file: {}".format(args.pretrain_weights))
@@ -110,10 +109,7 @@ def main(args):
                                                 epoch=epoch)
         scheduler.step()
         # validate
-        val_loss, val_acc = evaluate(model=model,
-                                     data_loader=val_loader,
-                                     device=device,
-                                     epoch=epoch)
+        val_loss, val_acc = evaluate(model=model, data_loader=val_loader, device=device, epoch=epoch)
         tags = ["train_loss", "train_acc", "val_loss", "val_acc", "learning_rate"]
         tb_writer.add_scalar(tags[0], train_loss, epoch)
         tb_writer.add_scalar(tags[1], train_acc, epoch)
@@ -133,6 +129,7 @@ def main(args):
                 torch.save(model.state_dict(), os.path.join(args.model_save_dir, "model-{}.pth".format(epoch)))
         if epoch == args.epochs - 1:
             torch.save(model.state_dict(), os.path.join(args.model_save_dir, "final_model.pth"))
+
     print("[*] The val best model acc is {}".format(val_best_model_acc))
     print("[*] The train best model acc is {}".format(train_best_model_acc))
 
@@ -141,20 +138,20 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--num_classes', type=int, default=2)
     parser.add_argument('--epochs', type=int, default=300)
-    parser.add_argument('--batch-size', type=int, default=8)
+    parser.add_argument('--batch-size', type=int, default=16)
     parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--lrf', type=float, default=0.01)
     parser.add_argument('--snapshot_epoch', type=int, default=5)
 
     parser.add_argument('--only_save_best_model', type=bool, default=True)
     # dataset path
-    parser.add_argument('--data-path', type=str, default="/home/RT-DETR/rtdetr_paddle/datasets/TD20240705_LA/cut_dataset")
+    parser.add_argument('--data-path', type=str, default="dataset/TD20240705_LA/split_dataset/fold1/cut_dataset")
     # download model pre_weights
-    parser.add_argument('--pretrain_weights', type=str, default='pretrain_model_imagenet/pre_efficientnetv2-l.pth', help='pretrain weights path')
-    parser.add_argument("--weights_category", type=str, default="l", help="the pretrain weights category, only s or m or l")
-    parser.add_argument('--model_save_dir', type=str, default="weights/spine_fracture/TD20240705_LA/l", help="trained models save path")
-    parser.add_argument('--log_dir', type=str, default="runs/spine_fracture/TD20240705_LA/l", help="tensorboard logdir save path")
+    parser.add_argument('--pretrain_weights', type=str, default='pretrain_model_imagenet/pre_efficientnetv2-m.pth', help='pretrain weights path')
+    parser.add_argument("--weights_category", type=str, default="m", help="the pretrain weights category, only s or m or l")
+    parser.add_argument('--model_save_dir', type=str, default="weights/TD20240705_LA/fold1/m", help="trained models save path")
+    parser.add_argument('--log_dir', type=str, default="runs/TD20240705_LA/fold1/m", help="tensorboard logdir save path")
     parser.add_argument('--freeze-layers', type=bool, default=True)
-    parser.add_argument('--device', default='cuda:1', help='device id (i.e. 0 or 0,1 or cpu)')
+    parser.add_argument('--device', default='cuda:0', help='device id (i.e. 0 or 0,1 or cpu)')
     opt = parser.parse_args()
     main(opt)
