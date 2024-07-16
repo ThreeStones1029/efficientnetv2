@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-03-31 04:04:02
 LastEditors: ShuaiLei
-LastEditTime: 2024-07-15 12:39:18
+LastEditTime: 2024-07-16 08:13:17
 '''
 import os
 import sys
@@ -14,6 +14,7 @@ import random
 import torch
 from tqdm import tqdm
 import matplotlib.pyplot as plt
+from loss import FocalLoss
 
 
 def plot_data_loader_image(data_loader):
@@ -55,6 +56,7 @@ def read_pickle(file_name: str) -> list:
 def train_one_epoch(model, optimizer, data_loader, device, epoch):
     model.train()
     loss_function = torch.nn.CrossEntropyLoss()
+    # loss_function = FocalLoss()
     accu_loss = torch.zeros(1).to(device)  # 累计损失
     accu_num = torch.zeros(1).to(device)   # 累计预测正确的样本数
     optimizer.zero_grad()
@@ -83,7 +85,7 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch):
 @torch.no_grad()
 def evaluate(model, data_loader, device, epoch):
     loss_function = torch.nn.CrossEntropyLoss()
-    # focal_loss_function = torch.nn.CrossEntropyLoss()
+    # loss_function = FocalLoss()
     model.eval()
     accu_num = torch.zeros(1).to(device)   # 累计预测正确的样本数
     accu_loss = torch.zeros(1).to(device)  # 累计损失
@@ -97,7 +99,5 @@ def evaluate(model, data_loader, device, epoch):
         accu_num += torch.eq(pred_classes, labels.to(device)).sum()
         loss = loss_function(pred, labels.to(device))
         accu_loss += loss
-        data_loader.desc = "[valid epoch {}] loss: {:.3f}, acc: {:.3f}".format(epoch,
-                                                                               accu_loss.item() / (step + 1),
-                                                                               accu_num.item() / sample_num)
+        data_loader.desc = "[valid epoch {}] loss: {:.3f}, acc: {:.3f}".format(epoch, accu_loss.item() / (step + 1), accu_num.item() / sample_num)
     return accu_loss.item() / (step + 1), accu_num.item() / sample_num

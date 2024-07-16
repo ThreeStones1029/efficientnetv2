@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-02 13:58:48
 LastEditors: ShuaiLei
-LastEditTime: 2024-07-14 08:08:47
+LastEditTime: 2024-07-16 08:11:55
 '''
 import os
 import sys
@@ -18,6 +18,7 @@ from tools.io.common import load_json_file
 from tools.data.dataset_process import read_images_and_labels_from_txt
 from tqdm import tqdm
 import random
+from loss import FocalLoss
 
 
 def get_eval_images_and_labels(data_root, json_file):
@@ -79,7 +80,8 @@ def main(args):
     # load model weights
     model.load_state_dict(torch.load(args.model_path, map_location=device))
     # eval
-    loss_function = torch.nn.CrossEntropyLoss()
+    # loss_function = torch.nn.CrossEntropyLoss()
+    loss_function = FocalLoss()
     model.eval()
     accu_num = torch.zeros(1).to(device)   # 累计预测正确的样本数
     accu_loss = torch.zeros(1).to(device)  # 累计损失
@@ -103,12 +105,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--device', default='cuda:2', help='device id (i.e. 0 or 0,1 or cpu)')
     parser.add_argument('--num_classes', type=int, default=2)
-    parser.add_argument('--batch-size', type=int, default=1)
+    parser.add_argument('--batch-size', type=int, default=16)
     # 数据集所在根目录
-    parser.add_argument('--eval_dir', type=str, default="/home/RT-DETR/rtdetr_paddle/datasets/TD20240705_LA/cut_dataset/val", help="eval images folder directory")
+    parser.add_argument('--eval_dir', type=str, default="/home/RT-DETR/rtdetr_paddle/datasets/TD20240705_LA/split_dataset/fold5/cut_dataset/val", help="eval images folder directory")
     parser.add_argument('--eval_txt', type=str, default=None, help="eval images and labels txt file")
     parser.add_argument('--class_indict_file', type=str, default="./class_indices.json", help="The class name and label id dict")
     parser.add_argument("--weights_category", type=str, default="m", help="the pretrain weights category, only s or m or l")
-    parser.add_argument('--model_path', type=str, default="weights/spine_fracture/TD20240705_LA/m/val_best_model.pth", help="infer weight path")
+    parser.add_argument('--model_path', type=str, default="weights/TD20240705_LA/focus_loss/fold5/m/val_best_model.pth", help="infer weight path")
     opt = parser.parse_args()
     main(opt)

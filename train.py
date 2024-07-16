@@ -149,9 +149,9 @@ if __name__ == '__main__':
     # download model pre_weights
     parser.add_argument('--pretrain_weights', type=str, default='pretrain_model_imagenet/pre_efficientnetv2-m.pth', help='pretrain weights path')
     parser.add_argument("--weights_category", type=str, default="m", help="the pretrain weights category, only s or m or l")
-    parser.add_argument('--model_save_dir', type=str, default="weights/TD20240705_LA/fold1/m", help="trained models save path")
-    parser.add_argument('--log_dir', type=str, default="runs/TD20240705_LA/fold1/m", help="tensorboard logdir save path")
+    parser.add_argument('--model_save_dir', type=str, default="weights/TD20240705_LA/focus_loss/fold1/m", help="trained models save path")
+    parser.add_argument('--log_dir', type=str, default="runs/TD20240705_LA/focus_loss/fold1/m", help="tensorboard logdir save path")
     parser.add_argument('--freeze-layers', type=bool, default=True)
-    parser.add_argument('--device', default='cuda:0', help='device id (i.e. 0 or 0,1 or cpu)')
+    parser.add_argument('--device', default='cuda:1', help='device id (i.e. 0 or 0,1 or cpu)')
     opt = parser.parse_args()
     main(opt)
