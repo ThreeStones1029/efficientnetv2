@@ -145,13 +145,13 @@ if __name__ == '__main__':
 
     parser.add_argument('--only_save_best_model', type=bool, default=True)
     # dataset path
-    parser.add_argument('--data-path', type=str, default="dataset/TD20240705_LA/split_dataset/fold1/cut_dataset")
+    parser.add_argument('--data-path', type=str, default="dataset/TD20240705_LA/split_dataset/fold5/cut_dataset")
     # download model pre_weights
-    parser.add_argument('--pretrain_weights', type=str, default='pretrain_model_imagenet/pre_efficientnetv2-m.pth', help='pretrain weights path')
+    parser.add_argument('--pretrain_weights', type=str, default='weights/LA_preoperative_xray_fracture_cut/m/val_best_model.pth', help='pretrain weights path')
     parser.add_argument("--weights_category", type=str, default="m", help="the pretrain weights category, only s or m or l")
-    parser.add_argument('--model_save_dir', type=str, default="weights/TD20240705_LA/focus_loss/fold1/m", help="trained models save path")
-    parser.add_argument('--log_dir', type=str, default="runs/TD20240705_LA/focus_loss/fold1/m", help="tensorboard logdir save path")
+    parser.add_argument('--model_save_dir', type=str, default="weights/TD20240705_LA/preoperative_pretrain/fold5/m", help="trained models save path")
+    parser.add_argument('--log_dir', type=str, default="runs/TD20240705_LA/preoperative_pretrain/fold5/m", help="tensorboard logdir save path")
     parser.add_argument('--freeze-layers', type=bool, default=True)
-    parser.add_argument('--device', default='cuda:1', help='device id (i.e. 0 or 0,1 or cpu)')
+    parser.add_argument('--device', default='cuda:3', help='device id (i.e. 0 or 0,1 or cpu)')
     opt = parser.parse_args()
     main(opt)
