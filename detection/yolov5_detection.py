@@ -15,7 +15,7 @@ def yolov5_infer(envs_path, detection_script_path, config_path, infer_dir, infer
                         "-c", config_path,
                         "--infer_dir", infer_dir,
                         "--output_dir",infer_output_dir,
-                        "--draw_threshold", "0.6",
+                        "--draw_threshold", "0.5",
                         "--save_results", "True"]
     detection_command = " ".join(script_parameter)
     subprocess.run(detection_command, shell=True)

@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-17 12:41:00
 LastEditors: ShuaiLei
-LastEditTime: 2024-05-04 14:33:09
+LastEditTime: 2024-07-20 09:35:56
 '''
 import subprocess
 import multiprocessing
@@ -16,7 +16,7 @@ def rtdetr_paddle_infer(detection_parameter, infer_dir, output_dir):
                         "-o", "weights="+detection_parameter["model_path"],
                         "--infer_dir", infer_dir,
                         "--output_dir",output_dir,
-                        "--draw_threshold", "0.6",
+                        "--draw_threshold", "0.5",
                         "--visualize", "True",
                         "--save_results", "True"]
     detection_command = " ".join(script_parameter)
@@ -30,7 +30,7 @@ def rtdetr_pytorch_infer(detection_parameter, infer_dir, output_dir):
                         "--resume", detection_parameter["model_path"],
                         "--infer_dir", infer_dir,
                         "--output_dir",output_dir,
-                        "--draw_threshold", "0.6",
+                        "--draw_threshold", "0.5",
                         "--visualize", "False",
                         "--save_results", "True"]
     detection_command = " ".join(script_parameter)

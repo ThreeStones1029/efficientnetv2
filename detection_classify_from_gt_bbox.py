@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-12 08:28:55
 LastEditors: ShuaiLei
-LastEditTime: 2024-07-20 02:01:10
+LastEditTime: 2024-07-20 09:21:22
 '''
 import os
 import sys
@@ -21,7 +21,34 @@ from tools.coco.precoco import PreCOCO
 from my_dataset import TestDataSet, MyDataSet
 from tools.bbox.bbox_process import get_cut_bbox
 from tools.vis.bbox_pre_visualize import draw_bbox
-from get_detection_gt_or_predict_bbox import get_detection_result_from_gt
+
+
+def get_cut_images_from_gt(infer_dir, gt_detection_data, classify_catname2catid, detection_catid2catname):
+    """
+    the function will be used to get truth labels about fracture status in test images vertebraes.
+    这个方法用于根据验证集或者测试集的GT bbox标注裁剪图像
+    param: infer_dir: The infer images.
+    param: gt_detection_data: the gt bboxes.
+    param: classify_catname2catid: the classify category name to category id dict.
+    """
+    imgToAnns = gt_detection_data.imgToAnns
+    # record vertebrae bbox id
+    vertebrae_bbox_id_list = []
+    cut_images_list = []
+    cut_images_classify_label_list = []
+    for img_id, anns in imgToAnns.items():
+        file_name = gt_detection_data.loadImgs(img_id)[0]["file_name"]
+        image = Image.open(os.path.join(infer_dir, file_name)).convert('RGB')
+        width, height = image.size
+        for ann in anns:
+            cut_bbox = get_cut_bbox(ann["bbox"], width, height, expand_coefficient=1.5)
+            cut_image = image.crop((cut_bbox[0], cut_bbox[1], cut_bbox[2], cut_bbox[3]))
+            vertebrae_bbox_id_list.append(ann["id"])
+            cut_images_list.append(cut_image)
+            detection_catname = detection_catid2catname[ann["category_id"]]
+            classify_catname = detection_catname + "_images"
+            cut_images_classify_label_list.append(int(classify_catname2catid[classify_catname]))
+    return cut_images_list, cut_images_classify_label_list, vertebrae_bbox_id_list
  
 
 def main(args):
@@ -31,7 +58,8 @@ def main(args):
     detection_catid2catname = {}
     for category in gt_detection_data.dataset["categories"]:
         detection_catid2catname[category["id"]] = category["name"]
-    test_cut_images, test_cut_images_class, vertebrae_bbox_id_list = get_detection_result_from_gt(args.infer_dir, gt_detection_data, classify_catname2catid, detection_catid2catname)
+    test_cut_images, test_cut_images_class, vertebrae_bbox_id_list = get_cut_images_from_gt(args.infer_dir, gt_detection_data, classify_catname2catid, detection_catid2catname)
+    
     classify_bbox_id2detect_bbox_id = {i: vertebrae_bbox_id for i, vertebrae_bbox_id in enumerate(vertebrae_bbox_id_list)}
 
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
@@ -46,8 +74,8 @@ def main(args):
 
     # 实例化验证数据集
     test_dataset = MyDataSet(images=test_cut_images,
-                                images_class=test_cut_images_class,
-                                transform=data_transform)
+                             images_class=test_cut_images_class,
+                             transform=data_transform)
 
     batch_size = args.batch_size
     nw = min([os.cpu_count(), batch_size if batch_size > 1 else 0, 8])  # number of workers
@@ -120,10 +148,11 @@ def main(args):
             normal_num += 1
             if category_name == ann["status"]:
                 normal_true_num += 1   
+        
         print("file_name: {}, ann_id: {}, category_name: {}, status: {} fracture_prob: {:.3}".format(file_name, ann["id"], category_name, ann["status"], fracture_prob))
     print("fracture acc is {}".format(fracture_true_num / fracture_num))
     print("normal acc is {}".format(normal_true_num / normal_num))
-    print("The overall acc is {}".format(eval_acc))
+    print("The overall acc is {}".format((fracture_true_num + normal_true_num) / (fracture_num + normal_num)))
     # save classify result to json file.
     if args.save_results:
         save_json_file(bboxes_fracture_info, os.path.join(args.output_dir, "bbox.json"))

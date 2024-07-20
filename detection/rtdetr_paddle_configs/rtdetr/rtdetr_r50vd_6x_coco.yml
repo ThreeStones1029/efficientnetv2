@@ -6,6 +6,6 @@ _BASE_: [
   '_base_/rtdetr_reader.yml',
 ]
 
-weights: /home/RT-DETR/rtdetr_paddle/output/fracture_dataset/semantic/rtdetr_r50vd_6x_coco/best_model
+weights: /home/RT-DETR/rtdetr_paddle/output/TD20240705_LA/fold1/semantic/rtdetr_r50vd_6x_coco/best_model
 find_unused_parameters: True # 多卡设置False
 log_iter: 200
