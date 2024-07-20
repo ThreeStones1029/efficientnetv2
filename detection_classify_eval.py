@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-12 08:28:55
 LastEditors: ShuaiLei
-LastEditTime: 2024-07-08 08:41:56
+LastEditTime: 2024-07-20 02:01:10
 '''
 import os
 import sys
@@ -21,34 +21,7 @@ from tools.coco.precoco import PreCOCO
 from my_dataset import TestDataSet, MyDataSet
 from tools.bbox.bbox_process import get_cut_bbox
 from tools.vis.bbox_pre_visualize import draw_bbox
-
-
-def get_detection_result_from_gt(infer_dir, gt_detection_data, classify_catname2catid, detection_catid2catname):
-    """
-    the function will be used to get truth labels about fracture status in test images vertebraes.
-    param: infer_dir: The infer images.
-    param: gt_detection_data: the gt bboxes.
-    param: classify_catname2catid: the classify category name to category id dict.
-    """
-    imgToAnns = gt_detection_data.imgToAnns
-    # record vertebrae bbox id
-    vertebrae_bbox_id_list = []
-    cut_images_list = []
-    cut_images_classify_label_list = []
-    for img_id, anns in imgToAnns.items():
-        file_name = gt_detection_data.loadImgs(img_id)[0]["file_name"]
-        image = Image.open(os.path.join(infer_dir, file_name)).convert('RGB')
-        width, height = image.size
-        for ann in anns:
-            cut_bbox = get_cut_bbox(ann["bbox"], width, height, expand_coefficient=1.5)
-            cut_image = image.crop((cut_bbox[0], cut_bbox[1], cut_bbox[2], cut_bbox[3]))
-            vertebrae_bbox_id_list.append(ann["id"])
-            cut_images_list.append(cut_image)
-            detection_catname = detection_catid2catname[ann["category_id"]]
-            classify_catname = detection_catname + "_images"
-            cut_images_classify_label_list.append(int(classify_catname2catid[classify_catname]))
-    return cut_images_list, cut_images_classify_label_list, vertebrae_bbox_id_list
-    
+from get_detection_gt_or_predict_bbox import get_detection_result_from_gt
  
 
 def main(args):
@@ -171,20 +144,20 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     # 测试数据集所在根目录
-    parser.add_argument('--infer_dir', type=str, default="/home/RT-DETR/rtdetr_paddle/datasets/Fracture_dataset/test", help="images infer")
+    parser.add_argument('--infer_dir', type=str, default="/home/RT-DETR/rtdetr_paddle/datasets/TD20240705_LA/split_dataset/fold1/val", help="images infer")
     # detection parameter
     parser.add_argument('--save_cut_images', type=bool, default=True, help="if true, cut images will be saved")
     # Classification paramater
-    parser.add_argument('--device', default='cuda:3', help='device id (i.e. 0 or 0,1 or cpu)')
+    parser.add_argument('--device', default='cuda:1', help='device id (i.e. 0 or 0,1 or cpu)')
     parser.add_argument('--num_classes', type=int, default=2)
     parser.add_argument('--batch-size', type=int, default=8)
-    parser.add_argument("--weights_category", type=str, default="s", help="the pretrain weights category, only s or m or l")
-    parser.add_argument('--model_path', type=str, default="weights/spine_fracture/drr/s/val_best_model.pth", help="infer weight path")
+    parser.add_argument("--weights_category", type=str, default="m", help="the pretrain weights category, only s or m or l")
+    parser.add_argument('--model_path', type=str, default="weights/TD20240705_LA/fold1/m/val_best_model.pth", help="infer weight path")
     parser.add_argument('--output_dir', type=str, default="infer_output", help="infer image save path")
     parser.add_argument('--visualize', type=bool, default=True, help="whether visualize result")
     parser.add_argument('--save_results', type=bool, default=True, help="whether save detection and fracture result")
     # eval
-    parser.add_argument('--gt_bbox_json_file', type=str, default="/home/RT-DETR/rtdetr_paddle/datasets/Fracture_dataset/annotations/fracture_bbox_test.json", 
+    parser.add_argument('--gt_bbox_json_file', type=str, default="/home/RT-DETR/rtdetr_paddle/datasets/TD20240705_LA/split_dataset/fold1/annotations/fracture_bbox_val.json", 
                         help="the test images gt json file which record fracture and normal information")
     opt = parser.parse_args()
     main(opt)
