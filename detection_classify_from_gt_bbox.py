@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-12 08:28:55
 LastEditors: ShuaiLei
-LastEditTime: 2024-07-20 09:21:22
+LastEditTime: 2024-07-21 09:04:37
 '''
 import os
 import sys
@@ -173,7 +173,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     # 测试数据集所在根目录
-    parser.add_argument('--infer_dir', type=str, default="/home/RT-DETR/rtdetr_paddle/datasets/TD20240705_LA/split_dataset/fold1/val", help="images infer")
+    parser.add_argument('--infer_dir', type=str, default="/home/RT-DETR/rtdetr_paddle/datasets/TD20240705_LA/split_dataset/fold5/val", help="images infer")
     # detection parameter
     parser.add_argument('--save_cut_images', type=bool, default=True, help="if true, cut images will be saved")
     # Classification paramater
@@ -181,12 +181,12 @@ if __name__ == "__main__":
     parser.add_argument('--num_classes', type=int, default=2)
     parser.add_argument('--batch-size', type=int, default=8)
     parser.add_argument("--weights_category", type=str, default="m", help="the pretrain weights category, only s or m or l")
-    parser.add_argument('--model_path', type=str, default="weights/TD20240705_LA/fold1/m/val_best_model.pth", help="infer weight path")
+    parser.add_argument('--model_path', type=str, default="weights/TD20240705_LA/preoperative_pretrain/fold5/m/val_best_model.pth", help="infer weight path")
     parser.add_argument('--output_dir', type=str, default="infer_output", help="infer image save path")
     parser.add_argument('--visualize', type=bool, default=True, help="whether visualize result")
     parser.add_argument('--save_results', type=bool, default=True, help="whether save detection and fracture result")
     # eval
-    parser.add_argument('--gt_bbox_json_file', type=str, default="/home/RT-DETR/rtdetr_paddle/datasets/TD20240705_LA/split_dataset/fold1/annotations/fracture_bbox_val.json", 
+    parser.add_argument('--gt_bbox_json_file', type=str, default="/home/RT-DETR/rtdetr_paddle/datasets/TD20240705_LA/split_dataset/fold5/annotations/fracture_bbox_val.json", 
                         help="the test images gt json file which record fracture and normal information")
     opt = parser.parse_args()
     main(opt)
