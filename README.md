@@ -4,7 +4,7 @@
  * @Author: ThreeStones1029 2320218115@qq.com
  * @Date: 2024-03-31 04:04:02
  * @LastEditors: ShuaiLei
- * @LastEditTime: 2024-09-09 08:26:30
+ * @LastEditTime: 2024-09-09 08:29:59
 -->
 ## Repository Notes
 This article will be used to record fracture detection. The overall process will be to first detect and then classify the vertebral body in the detection box to determine whether it is fractured or not.
@@ -80,8 +80,18 @@ python eval.py
 you can choose run rtdetr_paddle or rtdetr_pytorch
 
 ```bash
-python detection classify.py
+python detection_classify_from_predict_bbox.py
 ```
+</details>
+
+<details>
+<summary>grad cam vis</summary>
+you can use to visualize classify model
+
+~~~bash
+python grad_cam_vis.py
+~~~
+
 </details>
 
 
