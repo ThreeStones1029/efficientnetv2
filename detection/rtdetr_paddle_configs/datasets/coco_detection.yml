@@ -30,18 +30,18 @@ TrainDataset:
   name: COCODataSet
   image_dir: train
   anno_path: annotations/semantic_bbox_train.json
-  dataset_dir: /home/RT-DETR/rtdetr_paddle/datasets/TD20240705_LA/split_dataset/fold5
+  dataset_dir: /home/RT-DETR/rtdetr_paddle/datasets/TD20240705_LA/split_dataset/fold1
   data_fields: ['image', 'gt_bbox', 'gt_class', 'is_crowd']
 
 EvalDataset:
   name: COCODataSet
   image_dir: val
   anno_path: annotations/semantic_bbox_val.json
-  dataset_dir: /home/RT-DETR/rtdetr_paddle/datasets/TD20240705_LA/split_dataset/fold5
+  dataset_dir: /home/RT-DETR/rtdetr_paddle/datasets/TD20240705_LA/split_dataset/fold1
   allow_empty: true
 
 TestDataset:
   name: ImageFolder
   anno_path: annotations/semantic_bbox_val.json # also support txt (like VOC's label_list.txt)
-  dataset_dir: /home/RT-DETR/rtdetr_paddle/datasets/TD20240705_LA/split_dataset/fold5 # if set, anno_path will be 'dataset_dir/anno_path'
+  dataset_dir: /home/RT-DETR/rtdetr_paddle/datasets/TD20240705_LA/split_dataset/fold1 # if set, anno_path will be 'dataset_dir/anno_path'
 

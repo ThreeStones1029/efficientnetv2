@@ -4,7 +4,7 @@
  * @Author: ThreeStones1029 2320218115@qq.com
  * @Date: 2024-03-31 04:04:02
  * @LastEditors: ShuaiLei
- * @LastEditTime: 2024-07-02 01:00:56
+ * @LastEditTime: 2024-09-09 08:26:30
 -->
 ## Repository Notes
 This article will be used to record fracture detection. The overall process will be to first detect and then classify the vertebral body in the detection box to determine whether it is fractured or not.
@@ -75,7 +75,7 @@ python eval.py
 </details>
 
 
-<details>
+ <details>
 <summary>Detection classify</summary>
 you can choose run rtdetr_paddle or rtdetr_pytorch
 
@@ -94,6 +94,12 @@ python detection classify.py
 <div style="display: flex;">
     <img src="document/LA_preoperative_xray_example.jpg" alt="Image 3" width="300"; padding: 5px;">
     <img src="document/LA_preoperative_xray_example2.png" alt="Image 4" width="493";padding: 5px;">
+    
+</div>
+
+<div style="display: flex;">
+    <img src="document/xray_detection.png" alt="Image 3" width="400"; padding: 5px;">
+    <img src="document/xray_detection_classify.png" alt="Image 4" width="400";padding: 5px;">
     
 </div>
 </details>

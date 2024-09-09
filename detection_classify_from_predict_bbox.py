@@ -4,7 +4,7 @@ version:
 Author: ThreeStones1029 2320218115@qq.com
 Date: 2024-04-12 08:28:55
 LastEditors: ShuaiLei
-LastEditTime: 2024-07-21 06:52:11
+LastEditTime: 2024-09-09 03:48:55
 '''
 import os
 import sys
@@ -48,7 +48,7 @@ rtdetr_pytorch_infer_parameter = {"envs_path": "/root/anaconda3/bin/python",
 rtdetr_paddle_infer_parameter = {"envs_path": "/root/anaconda3/envs/rtdetr/bin/python",
                                   "detection_script_path": "/home/RT-DETR/rtdetr_paddle/tools/infer.py", 
                                   "config_path": "detection/rtdetr_paddle_configs/rtdetr/rtdetr_r50vd_6x_coco.yml",
-                                  "model_path": "/home/RT-DETR/rtdetr_paddle/output/TD20240705_LA/fold5/semantic/rtdetr_r50vd_6x_coco/best_model.pdparams"}
+                                  "model_path": "/home/RT-DETR/rtdetr_paddle/output/TD20240705_LA/fold1/semantic/rtdetr_r50vd_6x_coco/best_model.pdparams"}
 
 yolov5_infer_parameter = {"envs_path": "",
                           "detection_script_path": "", 
@@ -273,7 +273,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     # 测试数据集所在根目录
-    parser.add_argument('--infer_dir', type=str, default="/home/RT-DETR/rtdetr_paddle/datasets/TD20240705_LA/split_dataset/fold5/val", help="images infer")
+    parser.add_argument('--infer_dir', type=str, default="/home/RT-DETR/rtdetr_paddle/datasets/TD20240705_LA/split_dataset/fold1/val", help="images infer")
     # detection parameter
     parser.add_argument('--is_run_detection', type=bool, default=True, help="if run detection or not")
     parser.add_argument('--detection_model', type=str, default="rtdetr_paddle", help="the detection model")
@@ -286,12 +286,12 @@ if __name__ == "__main__":
     parser.add_argument('--num_classes', type=int, default=2)
     parser.add_argument('--batch-size', type=int, default=8)
     parser.add_argument("--weights_category", type=str, default="m", help="the pretrain weights category, only s or m or l")
-    parser.add_argument('--model_path', type=str, default="weights/TD20240705_LA/preoperative_pretrain/fold5/m/val_best_model.pth", help="infer weight path")
+    parser.add_argument('--model_path', type=str, default="weights/TD20240705_LA/preoperative_pretrain/fold1/m/val_best_model.pth", help="infer weight path")
     parser.add_argument('--output_dir', type=str, default="infer_output", help="infer image save path")
     parser.add_argument('--visualize', type=bool, default=True, help="whether visualize result")
     parser.add_argument('--save_results', type=bool, default=True, help="whether save detection and fracture result")
     # detection and classify eval
     parser.add_argument('--is_eval', type=bool, default=True, help="whether eval results")
-    parser.add_argument('--gt_json_file', type=str, default="dataset/TD20240705_LA/split_dataset/fold5/annotations/fracture_bbox_val.json", help="the fracture detection json file")
+    parser.add_argument('--gt_json_file', type=str, default="dataset/TD20240705_LA/split_dataset/fold1/annotations/fracture_bbox_val.json", help="the fracture detection json file")
     opt = parser.parse_args()
     main(opt)
